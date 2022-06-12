@@ -603,7 +603,7 @@ delta_tab = delta_df %>%
   pivot_wider(names_from = param,
               values_from = odds_prnt) %>%
   rename(`Brood Year` = brood_year) %>%
-  kbl(caption = "Odds ratio (90% credible interval) of survival between various detection points, comparing DSR to NRR. Values less than 1 indicate NRR has better relative survival, while values greater than 1 favor DSR. Cells in bold show statistically significant differences.",
+  kbl(caption = "Odds ratio (95% credible interval) of survival between various detection points, comparing DSR to NRR. Values less than 1 indicate NRR has better relative survival, while values greater than 1 favor DSR. Cells in bold show statistically significant differences.",
         escape = F) %>%
   kable_styling()
 delta_tab
