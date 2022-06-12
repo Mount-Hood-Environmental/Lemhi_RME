@@ -27,17 +27,6 @@ institute:
   - biomark: Biomark, Inc., 705 South 8th Street, Boise, Idaho, 83702, USA
 date: "`r format(Sys.time(), '%d %B, %Y')`" 
 output:
-  bookdown::word_document2:
-    fig_caption: yes
-    reference_docx: "../templates/template.docx"
-    number_sections: FALSE
-    toc: no
-    always_allow_html: true
-    fig_width: 6
-    pandoc_args:
-    - --lua-filter=../templates/scholarly-metadata.lua
-    - --lua-filter=../templates/author-info-blocks.lua
-    - --lua-filter=../templates/pagebreak.lua
   bookdown::html_document2:
     theme: yeti
     toc: yes
@@ -46,6 +35,17 @@ output:
       collapsed: yes
       smooth_scroll: yes
     number_sections: yes
+    pandoc_args:
+    - --lua-filter=../templates/scholarly-metadata.lua
+    - --lua-filter=../templates/author-info-blocks.lua
+    - --lua-filter=../templates/pagebreak.lua
+  bookdown::word_document2:
+    fig_caption: yes
+    reference_docx: "../templates/template.docx"
+    number_sections: FALSE
+    toc: no
+    always_allow_html: true
+    fig_width: 6
     pandoc_args:
     - --lua-filter=../templates/scholarly-metadata.lua
     - --lua-filter=../templates/author-info-blocks.lua
@@ -552,7 +552,7 @@ surv_p
 
 ```
 
-The NRR life-history strategy had higher relative survival from the lower Lemhi River rotary screw trap to GRJ for all brood years except BY2008 (Figure \@ref(fig:delta-fresh), Table \ref(tab:delta-tab)). The pattern was less apparent looking just at mainstem juvenile survival between GRJ and BOJ; however, evaluating the "entire" juvenile survival from the lower Lemhi River to BOJ, the NRR strategy again had higher relative survival in all years except BY009 (Figure \@ref(fig:delta-fresh), Table \ref(tab:delta-tab)). Higher relative juvenile survival for the NRR strategy from LLRTP to GRJ and BOJ in most years is likely largely due to NRR juveniles having already survived through winter months.
+The NRR life-history strategy had higher relative survival from the lower Lemhi River rotary screw trap to GRJ for all brood years except BY2008 (Figure \@ref(fig:delta-fresh), Table \@ref(tab:delta-tab)). The pattern was less apparent looking just at mainstem juvenile survival between GRJ and BOJ; however, evaluating the "entire" juvenile survival from the lower Lemhi River to BOJ, the NRR strategy again had higher relative survival in all years except BY009 (Figure \@ref(fig:delta-fresh), Table \@ref(tab:delta-tab)). Higher relative juvenile survival for the NRR strategy from LLRTP to GRJ and BOJ in most years is likely largely due to NRR juveniles having already survived through winter months.
 
 ```{r delta-fresh, fig.cap = "Boxplots of posteriors of log odds ratios of survival between DSR and NRR tags. Values greater than 0 indicate relatively better survival for DSR fish and less than 0 indicates relatively better survival for NRR fish. Color indicates which life history strategy was favored for that brood year. Boxes represent the middle 50% of the posterior draws and the median is shown by the bisecting line. Whiskers show 95% credible intervals."}
 favored_p = delta_df %>%
