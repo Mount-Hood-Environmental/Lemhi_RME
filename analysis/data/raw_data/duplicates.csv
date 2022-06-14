@@ -1,0 +1,75 @@
+,radio_frequency,pit_tag_num,channel_unit_type,bank_type_condition_closest,dominant_cover_type_1_5m_radius,,,radio_frequency,pit_tag_num,channel_unit_type,bank_type_condition_closest,dominant_cover_type_1_5m_radius
+1,1410,3DD.00776F6F61,Pool,Vegetated,Aquatic Veg.,,1,1410,3DD.00776F6F61,Pool,Vegetated,Aquatic Veg.
+2,1420,3DD.00776ECBD8,Pool,Riprap,Boulder,,2,1420,3DD.00776ECBD8,Pool,Riprap,Boulder
+3,1490,3DD.007770CFCE,Pool,Vegetated,Small Wood,,3,1490,3DD.007770CFCE,Pool,Vegetated,Small Wood
+4,1500,3DD.00776F5249,Rapid+,Riprap,No Cover,,4,1500,3DD.00776F5249,Rapid+,Riprap,No Cover
+5,2430,3DD.00776F6603,Riffle,Vegetated,Terrestrial Veg.,,5,2430,3DD.00776F6603,Riffle,Vegetated,Terrestrial Veg.
+6,2480,3DD.00776E05A2,Pool,Vegetated,Small Wood,,6,2480,3DD.00776E05A2,Pool,Vegetated,Small Wood
+7,2490,3DD.00776EF5D4,OCA,Riprap,Small Wood,,7,2490,3DD.00776EF5D4,OCA,Riprap,Small Wood
+8,2510,3DD.00776E576A,Pool,Vegetated,Small Wood,,8,2510,3DD.00776E576A,Pool,Vegetated,Small Wood
+9,3300,3DD.00776EA76A,Run,Vegetated,Boulder,,9,3300,3DD.00776EA76A,Run,Vegetated,Boulder
+10,3330,3DD.007770B3EE,Run,Vegetated,Terrestrial Veg.,,10,3330,3DD.007770B3EE,Run,Vegetated,Terrestrial Veg.
+11,3340,3DD.00777025EB,Pool,Vegetated,Terrestrial Veg.,,11,3340,3DD.00777025EB,Pool,Vegetated,Terrestrial Veg.
+12,3370,3DD.0077702FD5,Riffle,Vegetated,Terrestrial Veg.,,12,3370,3DD.0077702FD5,Riffle,Vegetated,Terrestrial Veg.
+13,3470,3DD.00776FC9F5,Riffle,Vegetated,Boulder,,13,3470,3DD.00776FC9F5,Riffle,Vegetated,Boulder
+14,4170,3DD.00776F5732,Run,Vegetated,Small Wood,,14,4170,3DD.00776F5732,Run,Vegetated,Small Wood
+15,4190,3DD.00776FC9F7,Pool,Vegetated,Unknown,,15,4190,3DD.00776FC9F7,Pool,Vegetated,Unknown
+16,4200,3DD.00776F9929,Riffle,Vegetated,Terrestrial Veg.,,16,4200,3DD.00776F9929,Riffle,Vegetated,Terrestrial Veg.
+17,4200,3DD.00776F9929,Riffle,Vegetated,Small Wood,,17,4200,3DD.00776F9929,Riffle,Vegetated,Small Wood
+18,4240,3DD.00777090AA,Run,Vegetated,Terrestrial Veg.,,18,4240,3DD.00777090AA,Run,Vegetated,Terrestrial Veg.
+19,4250,3DD.00776F8A2F,Run,Vegetated,Terrestrial Veg.,,19,4250,3DD.00776F8A2F,Run,Vegetated,Terrestrial Veg.
+20,4280,3DD.00776FA5C7,Pool,Vegetated,Terrestrial Veg.,,20,4280,3DD.00776FA5C7,Pool,Vegetated,Terrestrial Veg.
+21,4290,3DD.00776F1A49,SC,Vegetated,Small Wood,,21,4290,3DD.00776F1A49,SC,Vegetated,Small Wood
+22,5240,3DD.00776F5398,Pool,Vegetated,Large Wood,,22,5240,3DD.00776F5398,Pool,Vegetated,Large Wood
+23,5240,3DD.00776F5398,Pool,Vegetated,Undercut Bank,,23,5240,3DD.00776F5398,Pool,Vegetated,Undercut Bank
+24,5290,3DD.0077703337,Pool,Vegetated,Terrestrial Veg.,,24,5290,3DD.0077703337,Pool,Vegetated,Terrestrial Veg.
+25,5320,3DD.007770B2FC,Pool,Vegetated,Terrestrial Veg.,,25,5320,3DD.007770B2FC,Pool,Vegetated,Terrestrial Veg.
+26,5320,3DD.007770B2FC,SC,Vegetated,Terrestrial Veg.,,26,5320,3DD.007770B2FC,SC,Vegetated,Terrestrial Veg.
+27,5370,3DD.00776FA5F1,Pool,Vegetated,Terrestrial Veg.,,27,5370,3DD.00776FA5F1,Pool,Vegetated,Terrestrial Veg.
+28,5460,3DD.007770AB79,Riffle,Vegetated,Small Wood,,28,5460,3DD.007770AB79,Riffle,Vegetated,Small Wood
+29,5500,3DD.0077710AF7,SC,Vegetated,Small Wood,,29,5500,3DD.0077710AF7,SC,Vegetated,Small Wood
+30,5520,3DD.00776F7B88,Run,Vegetated,Terrestrial Veg.,,30,5520,3DD.00776F7B88,Run,Vegetated,Terrestrial Veg.
+31,6170,3DD.007770261B,Pool,Vegetated,Aquatic Veg.,,31,6170,3DD.007770261B,Pool,Vegetated,Aquatic Veg.
+32,6180,3DD.00777070F1,Pool,Unvegetated,Terrestrial Veg.,,32,6180,3DD.00777070F1,Pool,Unvegetated,Terrestrial Veg.
+33,6210,3DD.00777031C0,Pool,Riprap,Small Wood,,33,6210,3DD.00777031C0,Pool,Riprap,Small Wood
+34,6300,3DD.0077703D8F,Pool,Vegetated,Undercut Bank,,34,6300,3DD.0077703D8F,Pool,Vegetated,Undercut Bank
+35,6300,3DD.0077703D8F,SC,Vegetated,Terrestrial Veg.,,35,6300,3DD.0077703D8F,SC,Vegetated,Terrestrial Veg.
+36,6320,3DD.00776FCA27,Pool,Vegetated,Terrestrial Veg.,,36,6320,3DD.00776FCA27,Pool,Vegetated,Terrestrial Veg.
+37,6320,3DD.00776FCA27,SC,Vegetated,Large Wood,,37,6320,3DD.00776FCA27,SC,Vegetated,Large Wood
+38,6350,3DD.0077706C99,Riffle,Vegetated,Terrestrial Veg.,,38,6350,3DD.0077706C99,Riffle,Vegetated,Terrestrial Veg.
+39,6360,3DD.00776EA93E,SC,Unvegetated,Large Wood,,39,6360,3DD.00776EA93E,SC,Unvegetated,Large Wood
+40,6410,3DD.00776F6056,Pool,Riprap,No Cover,,40,6410,3DD.00776F6056,Pool,Riprap,No Cover
+41,6480,3DD.00776E847E,OCA,Vegetated,Small Wood,,41,6480,3DD.00776E847E,OCA,Vegetated,Small Wood
+42,7210,3DD.007770304C,Pool,Vegetated,No Cover,,42,7210,3DD.007770304C,Pool,Vegetated,No Cover
+43,7220,3DD.00777076E9,SC,Vegetated,Large Wood,,43,7220,3DD.00777076E9,SC,Vegetated,Large Wood
+44,7240,3DD.00777065A7,Run,Vegetated,Terrestrial Veg.,,44,7240,3DD.00777065A7,Run,Vegetated,Terrestrial Veg.
+45,7280,3DD.0077704A60,Pool,Vegetated,Small Wood,,45,7280,3DD.0077704A60,Pool,Vegetated,Small Wood
+46,7310,3DD.00776F5614,Riffle,Vegetated,Terrestrial Veg.,,46,7310,3DD.00776F5614,Riffle,Vegetated,Terrestrial Veg.
+47,7320,3DD.00776FDE11,Pool,Other,Undercut Bank,,47,7320,3DD.00776FDE11,Pool,Other,Undercut Bank
+48,7340,3DD.00776F6069,Riffle,Vegetated,Small Wood,,48,7340,3DD.00776F6069,Riffle,Vegetated,Small Wood
+49,7350,3DD.00776E99CD,Pool,Vegetated,Terrestrial Veg.,,49,7350,3DD.00776E99CD,Pool,Vegetated,Terrestrial Veg.
+50,7360,3DD.007770B231,Run,Vegetated,Aquatic Veg.,,50,7360,3DD.007770B231,Run,Vegetated,Aquatic Veg.
+51,7390,3DD.00776ECDBF,OCA,Riprap,Small Wood,,51,7390,3DD.00776ECDBF,OCA,Riprap,Small Wood
+52,7410,3DD.00776F8649,Pool,Vegetated,Small Wood,,52,7410,3DD.00776F8649,Pool,Vegetated,Small Wood
+53,7460,3DD.00776EAF3C,SC,Vegetated,Aquatic Veg.,,53,7460,3DD.00776EAF3C,SC,Vegetated,Aquatic Veg.
+54,8200,3DD.00776F38E7,Run,Vegetated,Terrestrial Veg.,,54,8200,3DD.00776F38E7,Run,Vegetated,Terrestrial Veg.
+55,8230,3DD.00776F46FB,Pool,Riprap,Boulder,,55,8230,3DD.00776F46FB,Pool,Riprap,Boulder
+56,8240,3DD.007770A6E0,Pool,Vegetated,Terrestrial Veg.,,56,8240,3DD.007770A6E0,Pool,Vegetated,Terrestrial Veg.
+57,8280,3DD.00776F4725,Run,Vegetated,Large Wood,,57,8280,3DD.00776F4725,Run,Vegetated,Large Wood
+58,8310,3DD.00776F5274,Run,Vegetated,Undercut Bank,,58,8310,3DD.00776F5274,Run,Vegetated,Undercut Bank
+59,8310,3DD.00776F5274,Riffle,Riprap,Boulder,,59,8310,3DD.00776F5274,Riffle,Riprap,Boulder
+60,8320,3DD.00776FEDCB,Riffle,Vegetated,Terrestrial Veg.,,60,8320,3DD.00776FEDCB,Riffle,Vegetated,Terrestrial Veg.
+61,8350,3DD.00776EAB03,Riffle,Vegetated,Terrestrial Veg.,,61,8350,3DD.00776EAB03,Riffle,Vegetated,Terrestrial Veg.
+62,8360,3DD.00776F4859,Run,Vegetated,Terrestrial Veg.,,62,8360,3DD.00776F4859,Run,Vegetated,Terrestrial Veg.
+63,8380,3DD.00776F29F5,Pool,Vegetated,Small Wood,,63,8380,3DD.00776F29F5,Pool,Vegetated,Small Wood
+64,8520,3DD.0077702FBA,SC,Unvegetated,Small Wood,,64,8520,3DD.0077702FBA,SC,Unvegetated,Small Wood
+65,9270,3DD.00776F52D3,Pool,Bar/Island,No Cover,,65,9270,3DD.00776F52D3,Pool,Bar/Island,No Cover
+66,9290,3DD.00776F8B89,Pool,Vegetated,Small Wood,,66,9290,3DD.00776F8B89,Pool,Vegetated,Small Wood
+67,9350,NA,Riffle,Vegetated,Terrestrial Veg.,,67,9350,NA,Riffle,Vegetated,Terrestrial Veg.
+68,9360,3DD.00777022FE,OCA,Riprap,Boulder,,68,9360,3DD.00777022FE,OCA,Riprap,Boulder
+69,9390,3DD.00776E49BE,Pool,Riprap,Boulder,,69,9390,3DD.00776E49BE,Pool,Riprap,Boulder
+70,9420,3DD.007770C021,OCA,Riprap,Terrestrial Veg.,,70,9420,3DD.007770C021,OCA,Riprap,Terrestrial Veg.
+71,9430,3DD.007770F1BE,Run,Vegetated,Small Wood,,71,9430,3DD.007770F1BE,Run,Vegetated,Small Wood
+72,9480,3DD.00776ECF5B,Riffle,Vegetated,Small Wood,,72,9480,3DD.00776ECF5B,Riffle,Vegetated,Small Wood
+73,9490,3DD.00776F7E14,Pool,Vegetated,Terrestrial Veg.,,73,9490,3DD.00776F7E14,Pool,Vegetated,Terrestrial Veg.
+74,9500,3DD.00776F459F,Run,Vegetated,Small Wood,,74,9500,3DD.00776F459F,Run,Vegetated,Small Wood

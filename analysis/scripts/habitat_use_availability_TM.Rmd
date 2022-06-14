@@ -235,7 +235,7 @@ Microhabitat use data were collected from radio-tagged juvenile Chinook salmon i
 
 Because of limited battery life, radio tags were programmed to operate in three batches to cover the entire winter season.  Batch 1 transmitters (181 fish) were programmed to operate continuously upon activation, batch 2 transmitters (47 fish) operated for an hour upon activation then shutdown to reactivate at day 50, and batch 3 transmitters (51 fish) operated for an hour upon activation then shutdown to reactivate at day 100.
 
-Throughout the winter, mobile tracking surveys were completed by boat and on foot, dependent on weather and river conditions.  Surveys covered 50 km of the lower Lemhi River from its confluence with Hayden Creek  downstream to its confluence with the Salmon River approximately every two weeks. When a transmitter was detected, surveyors pin-pointed the signal location to the finest scale possible (typically < 1 m^2), tried to determine if the tag was in a live fish, and recorded the location using an EOS Arrow 100 GNSS GPS receiver with sub-meter accuracy. Habitat metrics describing channel unit type, bank condition, dominant substrate, availability of substrate concealment, dominant cover type, distance to cover, depth, and mean column velocity, were also collected at each tag location. 
+Throughout the winter, mobile tracking surveys were completed by boat and on foot, dependent on weather and river conditions.  Surveys covered 50 km of the lower Lemhi River from its confluence with Hayden Creek  downstream to its confluence with the Salmon River approximately every two weeks. When a transmitter was detected, surveyors pin-pointed the signal location to the finest scale possible, typically < 1 m(squared), tried to determine if the tag was in a live fish, and recorded the location using an EOS Arrow 100 GNSS GPS receiver with sub-meter accuracy. Habitat metrics describing channel unit type, bank condition, dominant substrate, availability of substrate concealment, dominant cover type, distance to cover, depth, mean column velocity, water temperature and presence of ice were also collected at each tag location. 
 
 ```{r}
 # filter for tags recovered by unique radio tag
@@ -247,13 +247,9 @@ use_recovered <- xs_use %>%
 use_unique <- xs_use %>%
   distinct(radio_frequency) 
 
-#summarize count of qualified, unique observations
-use_selected <- xs_all %>%
-  filter(habitat_selected_new == "Yes")
-
 ```
 
-Mobile tracking surveys resulted in a detection total of `r nrow(use_unique)` unique radio tags of which `r nrow(use_recovered)` were physically recovered (one confirmed mortality). The high recovery rate of detected tags (22%) combined with the inability to confirm tag detections as live fish created some uncertainty about the validity of fish use data.  To address this, a decision tree was developed based on professional expertise and published literature to qualify tag detection locations as selected for habitat. Using the decision tree, `r nrow(use_selected)` unique selected habitat locations were identified.     
+Mobile tracking surveys resulted in a detection total of `r nrow(use_unique)` unique radio tags of which `r nrow(use_recovered)` were physically recovered.  Of all the recovered tags only one was a confirmed mortality. The high recovery rate for detected tags (22%) made us question whether the rest of the detected tags were in fact live, overwintering fish, mortalities or shed tags.  To address this, a decision tree was developed based on professional expertise and published literature. 
 
 
 ## Habitat Availability Power Analysis
@@ -308,26 +304,17 @@ comp_df = dv_df %>%
 
 ```
 
-First, we wanted to assess whether the habitat availability data collected in August 2019 was sufficient to capture the overall distribution of available habitat throughout the lower Lemhi River, or whether addition habitat availablity data were needed. Again, in August 2019, a total of `r nrow(xs_summary)` transects (cross-sections) were sampled, based on a stratified sample where strata were defined by low, medium, and high sinuosity (Tables \@ref(tab:sin-table) & \@ref(tab:xs-table)). We started by examining the depth and velocity values available from raster build on 2D numerical models for the entire lower Lemhi. We then extracted depth and velocity values from points along the sampled transects, and compared those distributions with the distributions of depth and velocity for the entire available raster. Our hypothesis is that if the distributions are similar between the entire raster and the sampled transects, then the sample has done an adequate job of capturing the distribution of available habitat.
+First, we wanted to assess whether the habitat availability data collected in August 2019 was sufficient to capture the overall distribution of available habitat throughout the lower Lemhi River, or whether addition habitat availablity data were needed. Again, in August 2019, a total of `r nrow(xs_summary)` transects (cross-sections) were sampled, based on a stratified sample where strata were defined by low, medium, and high sinuosity (Tables \@ref(tab:sin-table) & \@ref(tab:xs-table)). We started by examining the depth and velocity values available from raster build on 2D numerical models for the entire lower Lemhi. We then extracted depth and velocity values from points along the sampled transects, and compared those distributions with the distributions of depth and velocity for the entire available raster. Our hypothesis is that if the distributions are similar between the enitre raster and the sampled transects, then the sample has done an adequate job of capturing the distribution of available habitat.
 
 
 ## Habitat Preference
 
 After filtering the found radio tags to include only those fish that we deemed selected a given location, we compared the available habitat to the habitat used by radio-tagged juvenile Chinook salmon. To date, we made comparisons for the following categories:
 
-* Sinuosity
-* Depth and Velocity
 * Channel Unit Types
 * Substrate Concealment
 * Cover within 1.5 m
 
-### Sinuosity
-
-First, we looked at the proportions of available habitat and used habitat by sinuosity categories in the lower Lemhi. Comparatively, the used habitat is fairly proportional to the available habitat, suggesting that fish may not be selecting for habitat on the reach scale but rather the microhabitat scale.
-
-### Depth and Velocity
-
-Depth and mean column velocity metrics were recorded for 47 of the 74 unique selected habitat locations.  Surface ice and depth were the primary factors preventing collection of depth and velocity metrics at all 74 locations.    
 
 ### Channel Unit Types
 
@@ -382,63 +369,6 @@ comp_df %>%
 
 
 ## Habitat Preference
-
-### Sinuosity
-
-```{r}
-
-# percentage available habitat by sinuosity
-sin_all <- center_pts_all %>%
-st_drop_geometry() %>%
-select(Category) %>%
-count(Category) %>%
-mutate(Percentage = n/sum(n)) %>%
-add_column(Habitat = "Available")
-
-# percentage use habitat by sinuosity 
-sin_use <- xs_use %>%
-filter(habitat_selected == "Selected" & same_location_as_last_survey == "no") %>%
-select(Category) %>%
-count(Category) %>%
-mutate(Percentage = n/sum(n)) %>%
-add_column(Habitat = "Use") %>%
-bind_rows(sin_all) %>%
-  
-ggplot(mapping = aes(x=Category, y=Percentage, fill = Habitat))+
-geom_bar (position = "dodge", stat = "identity") +
-theme(plot.title = element_text(hjust = 0.5)) +
-xlab("Sinuosity") +
-ylab("Proportion")
-sin_use
-```
-
-### Depth and Velocity
-
-```{r}
-# boxplot of velocity for available habitat
-setwd("C:/Users/Tmac/OneDrive - Mount Hood Environmental/Desktop/Work/Mt Hood Environmental/Lemhi Habitat Availability & Use")
-#read in csv for availability and use depths and velocities
-avail_use_depth <- read_csv("avail_use_depth.csv")
-avail_use_vel <- read_csv("avail_use_vel.csv")
-
-# boxplot comparisons for available/use depths/velocities
-boxplot(avail_use_depth$`Depth`~ avail_use_depth$Habitat, main = "Distribution of Depths", ylab = "Depth (m)", xlab ="")
-
-boxplot(avail_use_vel$`Velocity`~ avail_use_vel$Habitat, main = "Distribution of Velocities", ylab = "Velocity (m/s)", xlab ="")
-```
-```{r}
-# variance test for depth
-depth_var <- var.test(Depth ~ Habitat, data = avail_use_depth)
-
-# Welch test for depth
-t.test(Depth ~ Habitat, data = avail_use_depth)
-
-# variance test for velocity
-var.test(Velocity ~ Habitat, data = avail_use_vel)
-
-# Welch test for velocitysin_use <- xs_use %>%
-t.test(Velocity ~ Habitat, data = avail_use_vel)
-```
 
 ### Channel Unit Types
 
