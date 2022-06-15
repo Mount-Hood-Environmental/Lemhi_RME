@@ -150,7 +150,7 @@ xs_summary = xs_all %>%
 Degradation of tributary habitat has been implicated as a major factor contributing to declines of Pacific salmon *Oncorhynchus* spp. Tributary habitat rehabilitation actions are necessary towards stemming population declines. However, habitat use information for juvenile salmonids, particularly during winter months, is not well documented. 
 
 Habitat requirements for fish include physical and biological components necessary to complete life histories and ensure population viability [@Newcomb2007], #(Rosenfeld 2003)
-Habitat availability can be defined as the accessibility of such components by a fish [@Johnson1980]. Alternatively, habitat use is the way a fish exploits the physical and biological resources available to them [@Favrot2018]. Habitat suitability measures a specific available habitat's capacity to support a fish, the most suitable habitats being optimal [@Bovee1986]. Available habitats can be hierarchically characterized employing a spectrum ranging from least suitable (i.e., avoided) to most suitable (i.e., optimal). Habitat selection is determined when a fish chooses a physical or biological component from a spectrum of available habitats [@Johnson1980]. If habitat use is proportionally equivalent to habitat availability (i.e., no preference), then habitat use is considered random. However, when a fish selects for a specific physical or biological component given equal available habitat, this is considered preferred habitat (e.g., laboratory experiment: @Johnson1980). Critical habitat provides components essential to sensitive life stages (e.g., early life history: @Pitlo1989, @Newcomb2007).  Winter habitat is thought be critical because of specific biological conditions required by fish for survival and condition factor maintenance during this time period #(Favrot and Jonasson 2014). However, due to extreme environs (e.g., surface ice), minimal research has characterized winter microhabitat use and suitability empirically for Pacific salmon parr #(Huusko et al. 2007).
+Habitat availability can be defined as the accessibility of such components by a fish [@Johnson1980]. Alternatively, habitat use is the way a fish exploits the physical and biological resources available to them [@Favrot2018]. Habitat suitability measures a specific available habitat's capacity to support a fish, the most suitable habitats being optimal [@Bovee1986]. Available habitats can be hierarchically characterized by a spectrum ranging from least suitable (i.e., avoided) to most suitable (i.e., optimal). Habitat selection is determined when a fish chooses a physical or biological component from a spectrum of available habitats [@Johnson1980]. If habitat use is proportionally equivalent to habitat availability (i.e., no preference), then habitat use is considered random. However, when a fish selects for a specific physical or biological component given equal available habitat, this is considered preferred habitat (e.g., laboratory experiment: @Johnson1980). Critical habitat provides components essential to sensitive life stages (e.g., early life history: @Pitlo1989, @Newcomb2007).  Winter habitat is thought be critical because of specific biological conditions required by fish for survival and condition factor maintenance during this time period [@Favrot2018]. However, due to extreme environs (e.g., surface ice), minimal research has characterized winter microhabitat use and suitability empirically for Pacific salmon parr #(Huusko et al. 2007).
 
 
 ## Objectives
@@ -251,9 +251,10 @@ use_selected <- xs_all %>%
 
 ```
 
-Mobile tracking surveys resulted in a detection total of `r nrow(use_unique)` unique radio tags of which `r nrow(use_recovered)` were physically recovered (one confirmed mortality). The high recovery rate of detected tags (22%) combined with the inability to confirm tag detections as live fish created some uncertainty about the validity of fish use data.  To address this, a decision tree was developed based on professional expertise and published literature to qualify tag detection locations as selected for habitat (Figure \@ref(fig:tree-fig)). Using the decision tree, `r nrow(use_selected)` unique selected habitat locations were identified.
+Mobile tracking surveys resulted in a detection total of `r nrow(use_unique)` unique radio tags of which `r nrow(use_recovered)` were physically recovered (one confirmed mortality). The high recovery rate of detected tags (22%) combined with the inability to confirm tag detections as live fish created some uncertainty about the validity of fish use data.  To address this, a decision tree was developed based on professional expertise and published literature ##(see Holleman et al 2022) to qualify tag detection locations as selected for habitat (Figure \@ref(fig:tree-fig)). Using the decision tree, `r nrow(use_selected)` unique selected habitat locations were identified.
 
 ```{r tree-fig, out.width = "500px", fig.align = "center", fig.cap = "Decision tree for determining qualified tag detection locations as selected habitat." }
+
 knitr::include_graphics(here("analysis/images/D_tree.jpg"))
 
 ```
@@ -327,13 +328,13 @@ After filtering the found radio tags to include only those fish that we deemed s
 
 ### Sinuosity
 
-First, we looked at the proportions of available habitat and selected habitat by sinuosity categories in the lower Lemhi. Comparatively, selected habitat is fairly proportional to the available habitat, suggesting that fish are not selecting for habitat on a reach scale but rather on a microhabitat scale.
+First, we looked at the proportions of available habitat and selected habitat by sinuosity categories in the lower Lemhi to see if there were any distribution patterns on the reach scale. 
 
 ### Depth and Velocity
 
-Depth (m) and mean column velocity (m/s) metrics were recorded at 47 of the `r nrow(use_selected)` unique selected habitat locations.  Environmental conditions (primarily surface ice and depth) prevented collection of depth and velocity measurements at some selected locations, likely introduced bias to this analysis, particularly habitat selection by depth. However, based off detailed notes taken during microhabitat use surveys combined with our decision tree accounting for velocity limits of overwintering fish, we feel confident the locations where mean column velocity was measured is a representative sample of selected habitat locations in the lower Lemhi.
+Depth (m) and mean column velocity (m/s) was measured at 47 of the `r nrow(use_selected)` selected habitat locations.  Environmental conditions (primarily surface ice and depth) prevented collection of depth and velocity measurements at some selected locations, likely introducing bias to this analysis, particularly habitat selection by depth. However, because our decision tree accounted for velocity limits of sustained swimming of juvenile salmonids, we feel confident the locations where mean column velocity was measured is a representative sample of habitat use locations in the lower Lemhi.
 
-For this analysis we compared boxplot distributions of depth and velocity from raster data corresponding with the point locations measured during the microhabitat availability survey (n=`r prettyNum(sum(xs_summary$n_pts), big.mark = ",")`) to depth and velocity measurements taken in the field during microhabitat use surveys. Using a variance test (F test; how far each data point is from the group mean), we found unequal variances in velocity distributions between habitat availability and use. This led us to use an unpooled, two sample test (Welch test) to determine there's a significant difference (p-value < 0.05) between mean available velocity and mean selected velocity in the lower Lemhi.  We performed these statistical tests on depth distributions as well and found a much smaller but still significant difference between mean available depth and mean selected depth.  Depth analysis should be used with caution though because of potential sampling bias.      
+For this analysis we compared boxplot distributions of depth and velocity from raster data corresponding with the point locations measured during the microhabitat availability survey (n=`r prettyNum(sum(xs_summary$n_pts), big.mark = ",")`) to depth and velocity measurements taken in the field during microhabitat use surveys. We used a variance test (F test; how far each data point is from the group mean), to evaluate variances between the habitat availability and habitat use datasets. This led us to use an unpooled, two sample test (Welch test) to determine if there's a significant difference (p-value < 0.05) between mean available depth and velocity and mean selected depth and velocity in the lower Lemhi.     
 
 ### Channel Unit Types
 
@@ -351,16 +352,6 @@ For the purposed of our initial cover analysis, we grouped all types of cover in
 
 
 # Results
-
-## Habitat Availability
-
-Habitat availability text...
-
-
-## Habitat Use
-
-Habitat use text...
-
 
 ## Habitat Availability Power Analysis
 
@@ -413,25 +404,35 @@ bind_rows(sin_all) %>%
 ggplot(mapping = aes(x=Category, y=Percentage, fill = Habitat))+
 geom_bar (position = "dodge", stat = "identity") +
 scale_fill_brewer(palette = "Set2") +
-theme(plot.title = element_text(hjust = 0.5)) +
+theme(plot.title = element_text(hjust = 0.5), legend.position="bottom") +
 ylab("Percentage") +
-xlab("")
+xlab("Sinuosity Category")
 sin_use
+
 ```
+
+Comparatively, selected habitat is fairly proportional to the available habitat in each sinuosity category (Figure \@ref(fig:sin-use)), suggesting that fish are not selecting for habitat on a reach scale but rather on a microhabitat scale.
 
 ### Depth and Velocity
 
-```{r fig.cap = "Distribution of depths for available and selected habitat."}
+```{r depth-fig, fig.cap = "Distribution of depths for available and selected habitat."}
 # boxplot of velocity for available habitat
 #read in csv for availability and use depths and velocities
 avail_use_depth <- read_csv("avail_use_depth.csv")
 avail_use_vel <- read_csv("avail_use_vel.csv")
 
 # boxplot comparisons for available/use depths/velocities
-boxplot(avail_use_depth$`Depth`~ avail_use_depth$Habitat, ylab = "Depth (m)", xlab ="")
+depth_box <- 
+  ggplot(avail_use_depth, aes(x = Habitat, y = Depth, fill = Habitat)) + 
+  geom_boxplot() +
+  theme(axis.text.x=element_blank(),
+        legend.position="bottom") +
+scale_fill_brewer(palette = "Set2") +
+  labs(y = "Depth (m)", x = "")
+depth_box
 ```
 
-```{r}
+```{r depth-tab}
 # Welch t test for depth
 depth_t <- t.test(Depth ~ Habitat, data = avail_use_depth)
 tidy_depth <- tidy(depth_t)
@@ -445,15 +446,26 @@ depth_tab = tidy_depth %>%
          `Welch t-test p-value` = p.value) %>%
   kable(caption = "Estimated mean depth for available and selected habitat and Welch t-test p-value.") %>%
   kable_styling(position = "center", 
-                full_width = F)
+             full_width = F)
 depth_tab
 ```
 
-```{r fig.cap = "Distribution of velocities for available and selected habitat."}
-boxplot(avail_use_vel$`Velocity`~ avail_use_vel$Habitat, ylab = "Velocity (m/s)", xlab ="")
+Visually, the boxplot distributions for depth availability and use are relatively similar (Figure \@ref(fig:depth-fig) ), however there is a statistically significant difference between group means (p<0.05; Table \@ref(tab:depth-tab) with fish selecting for shallower habitats. This inference should be used with caution though, due to potential sampling bias.
+
+```{r vel-fig, fig.cap = "Distribution of velocities for available and selected habitat."}
+# Basic box plot
+vel_box <- 
+  ggplot(avail_use_vel, aes(x = Habitat, y = Velocity, fill = Habitat)) + 
+  geom_boxplot() +
+  theme(axis.text.x=element_blank(),
+        legend.position="bottom") +
+scale_fill_brewer(palette = "Set2") +
+  labs(y = "Velocity (m/s)", x = "")
+vel_box
+
 ```
 
-```{r}
+```{r vel-tab}
 # Welch t test for velocity
 vel_t <- t.test(Velocity ~ Habitat, data = avail_use_vel)
 tidy_vel <- tidy(vel_t)
@@ -470,6 +482,7 @@ vel_tab = tidy_vel %>%
                 full_width = F)
 vel_tab
 ```
+There is a statistically significant difference between velocity availability and use in the lower Lemhi River (Table \@ref(tab:vel-tab), Figure \@ref(fig:vel-fig) ), suggesting that juvenile Chinook are selecting for limited, slow water habitat during the winter season. 
 
 ### Channel Unit Types
 
@@ -837,11 +850,41 @@ Unlike concealment, it does appear that radio-tagged juvenile Chinook salmon are
 
 ## Habitat Availability Power Analysis
 
-The distributions of the depths and velocities from the sampled transects and the rasters covering the entirety of the lower Lemhi River are nearly identical within each sinuosity class. This suggest that the sampled transects are capturing the distribution of available habitat well, and did not need to be supplemented with additional transects. Certainly, we are interested in habitat metrics other than depth and velocity, but without somehow simulating the true distributions of those metrics (e.g., substrate class, fish cover, etc.)) it would be diffucult to conduct a worthwhile power analysis to evaluate whether our current dataset is sufficient to capture those distributions. Depth and velocity were used as proxies for everything elese, because we had model outputs for them across the entire Lemhi River, which we treated as the "truth". We feel that the habitat availability dataset available from line transects in the lower Lemhi River is sufficient to capture the true available habitat.
+The distributions of the depths and velocities from the sampled transects and the rasters covering the entirety of the lower Lemhi River are nearly identical within each sinuosity class. This suggest that the sampled transects are capturing the distribution of available habitat well, and did not need to be supplemented with additional transects. Certainly, we are interested in habitat metrics other than depth and velocity, but without somehow simulating the true distributions of those metrics (e.g., substrate class, fish cover, etc.)) it would be difficult to conduct a worthwhile power analysis to evaluate whether our current dataset is sufficient to capture those distributions. Depth and velocity were used as proxies for everything else, because we had model outputs for them across the entire Lemhi River, which we treated as the "truth". We feel that the habitat availability dataset available from line transects in the lower Lemhi River is sufficient to capture the true available habitat.
 
 ## Habitat Preference
 
-Habitat preference discussion here...
+### Sinuosity
+With no real pattern in fish use relative to reaches categorized by low, medium or high sinuosity, it appears that fish are not selecting for habitat at the reach scale. 
 
+### Depth and Velocity
+While our analysis showed a statistically significant difference between the mean water depth that fish were using compared to available depths, sampling bias excluded deeper detected tag locations from the dataset because those locations were not safe to measure.  While we're not sure, had these omitted data points been included, a statistically significant difference may not have been calculated. 
+
+Alternatively, we feel the statistically significant difference in the velocities found at used habitat locations compared to available habitat is a valid analysis. Had higher velocities been included in the dataset to potentially shift the use distribution, those locations would have been filtered out based on literature detailing the upper limit of sustained swimming for juvenile salmonids (used as criteria in decision tree for qualifying habitat use). Strikingly, the mean velocity for available habitat (0.99 m/s) is significantly greater than the upper limit for sustained swimming speed (0.67 m/s) of a 111 mm fish, the average size Chinook in the study .
+
+### Channel Units
+Statistical analysis shows juvenile Chinook selecting for pools and off-channel areas at a higher frequency than what is available.  This supports the idea that these fish are seeking refuge from high velocities (i.e., riffles) which could be an important survival and fitness strategy during the winter months when fish are trying to maintain condition factor.
+
+### Concealment
+Contrary to our hypothesis, there was more concealment habitat available in the lower Lemhi than what was being used by juvenile Chinook.  One reason for this may be explained by fish seeking slow water habitat.  Generally, slow water habitat is associated with finer bed material (i.e., gravel, sands, fines) deposition. So, fish may not be selecting for areas where concealment is absent but rather low velocity is a more important habitat component than substrate concealment.  Also, while surveyors did their best to categorize substrate accurately, turbidity in the Lemhi River, especially at higher winter flows, made substrate observations challenging.
+
+### Cover
+Statistical analysis shows that fish use habitat with cover in significantly greater proportions that what is available to them. This analysis is likely understated too.  Because microhabitat availability surveys were conducted in August, overhanging vegetation was likely more prominent with leaves.  In the winter, during microhabitat use surveys, trees and plants had lost their leaves resulting in less available cover. How significant this may be is questionable but should be considered in the context of the seasonality of the two surveys.  
+
+### Conclusion 
+
+From our observations and analysis of winter habitat use in the lower Lemhi River, we conclude that juvenile Chinook are selecting for slow-water microhabitat with cover.  Our habitat availability surveys and analysis suggest that this habitat type is limited in the lower Lemhi.  We think this information supports previous research conducted in the Lemhi River and help guide restoration efforts.  
+
+While we believe this habitat availability and use study has been worthwhile and its findings are relevant to restoration efforts in the Lemhi River, it must be understood that the study does not come without some major confounding factors.  Those factors include:
+
+* Radio telemetry technology
+* Predation
+* Sample size
+* Sampling bias due to environmental conditions
+
+Because we were unable to confirm if radio tag detections were truly live fish and a high percentage of radio were physically recovered (22% of detected tags during microhabitat surveys), we hypothesize that tag antennas became entangled with physical habitat features when fish sought cover resulting in shed tags. Predation also likely contributed to the high tag recovery rate. 
+Ideally, we would have had a larger sample size of habitat use observations for a more robust analysis and better representation of the population sampled. 
+
+Largely due to environmental conditions microhabitat use surveys were not always feasible during certain times of the winter or in certain sections of the river.  When the river was not navigable by boat due to surface ice, we were forced to conduct surveys by foot which limited access to only those areas where we had landowner permission.  Also, river conditions prevented us from collecting all desired metrics (i.e., depth and velocity) at all detected tag locations.  
 
 # Literature Cited

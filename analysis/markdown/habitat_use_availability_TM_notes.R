@@ -97,166 +97,6 @@ xs_select_dv <- xs_use %>%
   filter(habitat_selected_new == "Yes", depth_m != "NA", mean_column_velocity != "NA") %>%
   select(depth_m, mean_column_velocity)
 
-
-# install packages
-install.packages(c("tidyselect","dials","dplyr","rlang","tibble",
-                   "tune","workflows","workflowsets","tidymodels"))
-library(tidyverse)
-library(tidymodels)
-library(tidytext)
-install.packages(c("rstatix", "corrr"))
-library(rstatix)
-library(corrr)
-library(ggplot2)
-
-# Cluster analysis of depth and velocities for selected habitat
-kclusts <-
-  tibble(k = 3) %>%
-  mutate(kclust = map(k, ~kmeans(xs_select_dv, .x)),
-  tidied = map(kclust, tidy),
-glanced = map(kclust, glance),
-augmented = map(kclust, augment, xs_select_dv))
-
-clusters <-
-  kclusts %>%
-  unnest(cols = c(tidied))
-assignments <-
-  kclusts %>%
-  unnest(cols = c(augmented))
-clusterings <-
-  kclusts %>%
-  unnest(cols = c(glanced))
-
-select_dv_map <-
-  ggplot(assignments, aes(x = mean_column_velocity, y = depth_m)) +
-  geom_point(aes(color = .cluster), alpha = 0.8) +
-  facet_wrap(~ k)
-select_dv_map
-select_dv_x <- select_dv_map + geom_point(data = clusters, size = 10, shape = "x")
-select_dv_x
-
-ggplot(clusterings, aes(k, tot.withinss)) +
-  geom_line() +
-  geom_point()
-
-three_select_dv <- xs_select_dv %>%
-  kmeans(centers = 3)
-three_select_dv
-summary(three_select_dv)
-
-augment(three_select_dv,xs_select_dv)
-
-glance(three_select_dv)
-
-three_dv <- tidy(three_select_dv)
-three_dv
-Comparison <- three_dv %>%
-  ggplot(mapping = aes(
-    x = mean_column_velocity,
-    y = depth_m
-  )) +
-  geom_point(aes(colour = factor(cluster),
-                 size = size))
-
-# filtering out selected habitat with depth and velocity measurements by  low sinuousity
-xs_low_dv <- xs_use %>%
-  mutate(habitat_selected_new = if_else(habitat_selected == "Selected" & same_location_as_last_survey == "no", "Yes", "No")) %>%
-  filter(habitat_selected_new == "Yes", depth_m != "NA", mean_column_velocity != "NA", Category == "Low") %>%
-  select(depth_m, mean_column_velocity)
-
-# Clustering analysis
-kclusts <-
-  tibble(k = 3) %>%
-  mutate(kclust = map(k, ~kmeans(xs_low_dv, .x)),
-         tidied = map(kclust, tidy),
-         glanced = map(kclust, glance),
-         augmented = map(kclust, augment, xs_low_dv))
-
-clusters <-
-  kclusts %>%
-  unnest(cols = c(tidied))
-assignments <-
-  kclusts %>%
-  unnest(cols = c(augmented))
-clusterings <-
-  kclusts %>%
-  unnest(cols = c(glanced))
-
-
-low_dv_map <-
-  ggplot(assignments, aes(x = mean_column_velocity, y = depth_m)) +
-  geom_point(aes(color = .cluster), alpha = 0.8) +
-  facet_wrap(~ k) +
-  labs(title = "Low Use", x = "Mean Column Velocity (m/s)", y = "Depth (m)") +
-theme(plot.title = element_text(hjust = 0.5))
-low_dv_map
-
-# filtering out selected habitat with depth and velocity measurements by medium sinuousity
-xs_med_dv <- xs_use %>%
-  mutate(habitat_selected_new = if_else(habitat_selected == "Selected" & same_location_as_last_survey == "no", "Yes", "No")) %>%
-  filter(habitat_selected_new == "Yes", depth_m != "NA", mean_column_velocity != "NA", Category == "Med") %>%
-  select(depth_m, mean_column_velocity)
-
-# Clustering analysis
-kclusts <-
-  tibble(k = 3) %>%
-  mutate(kclust = map(k, ~kmeans(xs_med_dv, .x)),
-         tidied = map(kclust, tidy),
-         glanced = map(kclust, glance),
-         augmented = map(kclust, augment, xs_med_dv))
-
-clusters <-
-  kclusts %>%
-  unnest(cols = c(tidied))
-assignments <-
-  kclusts %>%
-  unnest(cols = c(augmented))
-clusterings <-
-  kclusts %>%
-  unnest(cols = c(glanced))
-
-
-med_dv_map <-
-  ggplot(assignments, aes(x = mean_column_velocity, y = depth_m)) +
-  geom_point(aes(color = .cluster), alpha = 0.8) +
-  facet_wrap(~ k) +
-  labs(title = "Med Use", x = "Mean Column Velocity (m/s)", y = "Depth (m)") +
-  theme(plot.title = element_text(hjust = 0.5))
-med_dv_map
-
-# filtering out selected habitat with depth and velocity measurements by high sinuousity
-xs_high_dv <- xs_use %>%
-  mutate(habitat_selected_new = if_else(habitat_selected == "Selected" & same_location_as_last_survey == "no", "Yes", "No")) %>%
-  filter(habitat_selected_new == "Yes", depth_m != "NA", mean_column_velocity != "NA", Category == "High") %>%
-  select(depth_m, mean_column_velocity)
-
-# Clustering analysis
-kclusts <-
-  tibble(k = 3) %>%
-  mutate(kclust = map(k, ~kmeans(xs_high_dv, .x)),
-         tidied = map(kclust, tidy),
-         glanced = map(kclust, glance),
-         augmented = map(kclust, augment, xs_high_dv))
-
-clusters <-
-  kclusts %>%
-  unnest(cols = c(tidied))
-assignments <-
-  kclusts %>%
-  unnest(cols = c(augmented))
-clusterings <-
-  kclusts %>%
-  unnest(cols = c(glanced))
-
-
-high_dv_map <-
-  ggplot(assignments, aes(x = mean_column_velocity, y = depth_m)) +
-  geom_point(aes(color = .cluster), alpha = 0.8) +
-  facet_wrap(~ k) +
-  labs(title = "High Use", x = "Mean Column Velocity (m/s)", y = "Depth (m)") +
-  theme(plot.title = element_text(hjust = 0.5))
-high_dv_map
-
 # boxplot of depth for habitat use
 boxplot_depth <- xs_use %>%
   mutate(habitat_selected_new = if_else(habitat_selected == "Selected" & same_location_as_last_survey == "no", "Yes", "No")) %>%
@@ -318,24 +158,27 @@ setwd("C:/Users/Tmac/OneDrive - Mount Hood Environmental/Desktop/Work/Mt Hood En
 avail_use_depth <- read_csv("avail_use_depth.csv")
 avail_use_vel <- read_csv("avail_use_vel.csv")
 
-# boxplot comparisons for available/use depths/velocities
+#
+ boxplot comparisons for available/use depths/velocities
 boxplot(avail_use_depth$`Depth`~ avail_use_depth$Habitat, main = "Distribution of Depths", ylab = "Depth (m)", xlab ="")
 
 boxplot(avail_use_vel$`Velocity`~ avail_use_vel$Habitat, main = "Distribution of Velocities", ylab = "Velocity (m/s)", xlab ="")
 
 # variance test for depth
-depth_var <- var.test(Depth ~ Habitat, data = avail_use_depth)
-depth_var
+var.test(Depth ~ Habitat, data = avail_use_depth)
 
 # Welch test for depth
-t.test(Depth ~ Habitat, data = avail_use_depth)
+depth_t <- t.test(Depth ~ Habitat, data = avail_use_depth)
+tidy_depth <- tidy(depth_t) %>%
+  rename("habitat_avail_mean" = ,
+         )
 
 # variance test for velocity
 var.test(Velocity ~ Habitat, data = avail_use_vel)
 
-# Welch test for velocitysin_use <- xs_use %>%
-
-t.test(Velocity ~ Habitat, data = avail_use_vel)
+# Welch test for velocity
+vel_t <-t.test(Velocity ~ Habitat, data = avail_use_vel)
+tidy_vel <- tidy(vel_t)
 
 library(ggplot2)
 
