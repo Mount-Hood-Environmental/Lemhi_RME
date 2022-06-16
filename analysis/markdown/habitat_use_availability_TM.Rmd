@@ -94,8 +94,13 @@ theme_set(theme_bw())
 ```
 
 ```{r load-data}
+# habitat availability and use datasets
 load(here("analysis/data/derived_data/habitat_available.rda"))
 load(here("analysis/data/derived_data/habitat_use.rda"))
+
+# read in csv for availability and use depths and velocities
+avail_use_depth <- read_csv(here("analysis/data/derived_data/avail_use_depth.csv"))
+avail_use_vel   <- read_csv(here("analysis/data/derived_data/avail_use_vel.csv"))
 
 ```
 
@@ -415,11 +420,6 @@ Comparatively, selected habitat is fairly proportional to the available habitat 
 ### Depth and Velocity
 
 ```{r depth-fig, fig.cap = "Distribution of depths for available and selected habitat."}
-# boxplot of velocity for available habitat
-#read in csv for availability and use depths and velocities
-avail_use_depth <- read_csv("avail_use_depth.csv")
-avail_use_vel <- read_csv("avail_use_vel.csv")
-
 # boxplot comparisons for available/use depths/velocities
 depth_box <- 
   ggplot(avail_use_depth, aes(x = Habitat, y = Depth, fill = Habitat)) + 
