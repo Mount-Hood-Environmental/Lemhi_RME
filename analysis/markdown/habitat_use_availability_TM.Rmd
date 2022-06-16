@@ -1,22 +1,18 @@
 ---
 title: "Habitat Use versus Availability by Juvenile Chinook Salmon in Winter Months, Lemhi River"
 author:
+  - Tulley Mackey:
+      email: tulley.mackey@mthoodenvironmental.com
+      institute: [mhe_salmon]
+      correspondence: true
   - Kevin E. See:
       email: Kevin.See@dfw.wa.gov
       institute: [wdfw]
       correspondence: false
-  - Michael W. Ackerman:
-      email: mike.ackerman@mthoodenvironmental.com
-      institute: [mhe_mccall]
-      correspondence: true 
   - Nick Porter:
       email: Nicholas.Porter@merck.com
       institute: [biomark]
       correspondence: true
-  - Tulley Mackey:
-      email: tulley.mackey@mthoodenvironmental.com
-      institute: [mhe_salmon]
-      correspondence: false
   - Mike Hall:
       email: Mike.Hall1@merck.com
       institute: [biomark]
@@ -25,11 +21,15 @@ author:
       email: Richard.Carmichael@merck.com
       institute: [biomark]
       correspondence: false
+  - Michael W. Ackerman:
+      email: mike.ackerman@mthoodenvironmental.com
+      institute: [mhe_mccall]
+      correspondence: true 
 institute:
-  - wdfw: Washington Department of Fish and Wildife, Fish Program, Science Division, 1111 Washington Street NE, Olympia, Washington, 98501, USA
-  - mhe_mccall: Mount Hood Environmental, PO Box 4282, McCall, Idaho, 83638, USA
-  - biomark: Biomark, Inc., 705 South 8th Street, Boise, Idaho, 83702, USA
   - mhe_salmon: Mount Hood Environmental, 1009 South Daisy Street, Salmon, Idaho, 83467, USA
+  - wdfw: Washington Department of Fish and Wildife, Fish Program, Science Division, 1111 Washington Street NE, Olympia, Washington, 98501, USA
+  - biomark: Biomark, Inc., 705 South 8th Street, Boise, Idaho, 83702, USA
+  - mhe_mccall: Mount Hood Environmental, PO Box 4282, McCall, Idaho, 83638, USA
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   bookdown::html_document2:
