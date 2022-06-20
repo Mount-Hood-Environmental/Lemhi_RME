@@ -1781,7 +1781,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Habitat Use versus Availability by Juvenile Chinook Salmon in Winter Months, Lemhi River</h1>
 <h4 class="author">Tulley Mackey<sup>1,✉</sup>, Kevin E. See<sup>2</sup>, Nick Porter<sup>3,✉</sup>, Mike Hall<sup>3</sup>, Richie Carmichael<sup>3</sup>, and Michael W. Ackerman<sup>4,✉</sup></h4>
-<h4 class="date">16 June, 2022</h4>
+<h4 class="date">20 June, 2022</h4>
 
 </div>
 
@@ -1975,15 +1975,15 @@ Figure 2.1: Decision tree for determining qualified tag detection locations as s
 </div>
 <div id="channel-unit-types" class="section level3" number="2.4.3">
 <h3><span class="header-section-number">2.4.3</span> Channel Unit Types</h3>
-<p>Because there are multiple types of channel units, we employed a goodness-of-fit test for discrete multivariate data. This test compares the observed channel unit type that radio-tagged juveniles were found in with the proportion of channel unit types from the habitat availability dataset. The null hypothesis is that the “use” tags will be found in similar channel unit types relative to what is available. Because there are 7 channel unit types, this leads to a large number of potential arrangements. Therefore, we used a Monte Carlo approach to simulate 100,000 samples of <span class="math inline">\(n\)</span> observations (<span class="math inline">\(n\)</span> being the number of selected “use” channel units) using the habitat availability proportions of channel unit types. The p-value is then calculated by summing the relative frequencies of outcomes occurring less frequently than the observed ones, so a low p-value indicates that the observed “use” channel types are distributed differently that the available ones, suggesting that fish are not randomly distributed in overwinter habitat. We also used a log likelihood ratio goodness of fit test (G-test).</p>
+<p>Channel unit types included pools, riffles, runs, rapid+, small side-channels (SSC), and off-channel areas (OCA), similar to channel units delineated using the DASH protocol <span class="citation">(Carmichael et al. 2019)</span>. Because there are multiple types of channel units, we employed a goodness-of-fit test for discrete multivariate data. This test compares the observed channel unit types that radio-tagged juveniles were observed using to the proportion of channel unit types from the habitat availability dataset. The null hypothesis was that radio-tagged juvenile Chinook salmon would be found in channel units in the same (or similar) proportion to what is available. Because there are 7 distinct channel unit types, this leads to a large number of potential arrangements. Therefore, we used a Monte Carlo approach to simulate 100,000 samples of <span class="math inline">\(n\)</span> observations (<span class="math inline">\(n\)</span> being the number of selected “use” channel units) using the habitat availability proportions of channel unit types. The p-value is then calculated by summing the relative frequencies of outcomes occurring less frequently than the observed ones, so a low p-value indicates that the observed “use” channel types are distributed differently that the available ones, suggesting that fish are not randomly distributed in overwinter habitat. We also used a log likelihood ratio goodness of fit test (G-test).</p>
 </div>
 <div id="concealment" class="section level3" number="2.4.4">
 <h3><span class="header-section-number">2.4.4</span> Concealment</h3>
-<p>Because concealment is binary (either available or not), we tested whether there were differences between habitat availability and use using a Chi-squared test, as well as a G-test.</p>
+<p>At each point of habitat availability transects and at observed “use” locations by radio-tagged individuals, we estimated whether concealment habitat was available to juvenile Chinook salmon. <!-- It might be worth including how we estimated availability (or not) of available concealment habitat. I can't recall the details. And is that a citable method, perhaps from CHaMP? -->Because concealment is binary (either available or not), we tested whether there were differences between habitat availability and use using a Chi-squared test, as well as a G-test.</p>
 </div>
 <div id="cover" class="section level3" number="2.4.5">
 <h3><span class="header-section-number">2.4.5</span> Cover</h3>
-<p>For the purposed of our initial cover analysis, we grouped all types of cover into a single category, and compared that with the category of “no cover”. This made cover a binary variable, like concealment, allowing us to also use the Chi-squared and G-test.</p>
+<p>We determined whether fish cover was available within 1.5 m of each habitat availability transect point and at each “use” location. Cover types considered included artificial cover, aquatic vegetation, boulders, small and large wood, terrestrial vegetation, and undercut banks. Here, we grouped all types of cover into a single category, and compared whether cover was available with the category of “no cover”. This resulted in a binary variable, like concealment, allowing us to also use the Chi-squared and G-test.</p>
 </div>
 </div>
 </div>
@@ -2331,6 +2331,9 @@ Ideally, we would have had a larger sample size of habitat use observations for 
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-Bovee1986" class="csl-entry">
 Bovee, K. D. 1986. Development and evaluation of habitat suitability criteria for use in the <span>Instream Flow Incremental Methodolgy</span>. Pages 235 pp. Instream Flow Paper 21. U.S. Fish Wildl. Serv. Biol. Rep. 86(7).
+</div>
+<div id="ref-Carmichael2019" class="csl-entry">
+Carmichael, R. A., M. W. Ackerman, K. See, B. Lott, T. Mackay, and C. Beasley. 2019. Drone <span>Assisted Stream Habitat</span> (<span>DASH</span>) <span>Protocol</span>, <span>DRAFT</span>. <span>Biomark, Applied Biological Services</span>.
 </div>
 <div id="ref-Favrot2018" class="csl-entry">
 Favrot, S. D., B. C. Jonasson, and J. T. Peterson. 2018. <a href="https://doi.org/10.1002/tafs.10011">Fall and <span>Winter Microhabitat Use</span> and <span>Suitability</span> for <span>Spring Chinook Salmon Parr</span> in a <span>U</span>.<span>S</span>. <span>Pacific Northwest River</span></a>. Transactions of the American Fisheries Society 147(1):151–170.

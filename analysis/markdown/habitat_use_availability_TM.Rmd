@@ -229,7 +229,6 @@ xs_tbl
 
 ```
 
-
 ## Habitat Use
 
 Microhabitat use data were collected from radio-tagged juvenile Chinook salmon in the lower Lemhi River beginning in November 2019 through March 2020. For this study, a total of 279 fish were tagged from October 9 - 31, 2019 at three rotary screw trap (RST) locations in the Lemhi River: upper Lemhi RST (LEMTRP), Hayden Creek RST (HYDTRP), and lower Lemhi RST (LLRTRP). <!-- Were any fish from the lower Lemhi RST actually used in this assessment? The initial intent was to only use those fish tagged at the upper traps for this habitat availability and use assessment. Fish tagged at the lower Lemhi RST were used to assess movement and distribution of DSR juveniles into and through the Salmon River. Please clarify and make sure sample sizes are correct.-->Advanced Telemetry Systems, Inc. (ATS; hhtps://atstrack.com) radio transmitters (Model #ST100L) were surgically implanted into the abdomen of Chinook salmon presmolts (juveniles surviving to their first winter prior to spring emigration), ranging in length from 98 - 138 mm and weight from 10.4 - 31.1 g. Fish were also implanted with a Passive Integrated Transponder tag (PIT tag). Tagged fish were held for a minimum of six hours in live wells and released at night below the tagging sites once they had fully recovered from surgery.
@@ -261,7 +260,6 @@ knitr::include_graphics(here("analysis/images/D_tree.jpg"))
 
 ```
 
-
 ## Habitat Availability Power Analysis
 
 ```{r read_dv_data}
@@ -271,7 +269,8 @@ xs_raster = crossing(metric = c("depth", "velocity"),
   mutate(sample_xs = map2(metric,
                           sin_class,
                           .f = function(x, y) {
-                            st_read(paste0("S:/main/data/habitat/lemhi_telemetry/availability/raw/cross_sections/DV_extract/", y, "_", str_sub(x, 0 ,1), ".shp"),
+                            st_read(paste0("S:/main/data/habitat/lemhi_telemetry/availability/raw/cross_sections/DV_extract/", y,
+                                           "_", str_sub(x, 0 ,1), ".shp"),
                             quiet = T) %>%
                               dplyr::select(Name:Sinuosity, 
                                             Category,
@@ -316,7 +315,6 @@ comp_df = dv_df %>%
 
 Prior to evaluating for habitat selection or preference, we first wanted to assess whether the habitat availability data collected during August 2019 was sufficient to capture the overall distribution of available habitat throughout the lower Lemhi River, or whether addition habitat availability data were needed. A total of `r nrow(xs_summary)` transects (cross-sections) were sampled during August 2019 based on a stratified sample where strata were defined by low, medium, and high sinuosity (Tables \@ref(tab:sin-table) & \@ref(tab:xs-table)). We started by examining the depth and velocity values available from raster datasets derived from 2D numerical models for the entire lower Lemhi. We then extracted depth and velocity values from points along the sampled transects, and compared those distributions with the distributions of depth and velocity for the entire available raster. Our hypothesis is that if the distributions are similar between the entire raster and the sampled transects, then the sample has done an adequate job of capturing the distribution of available habitat.
 
-
 ## Habitat Preference
 
 After filtering the identified radio tags to include only those fish that we deemed selected a given location, we then compared the total available habitat in the lower Lemhi River to the habitat that was selected by radio-tagged Chinook salmon presmolts. Comparisons were made for the following habitat characteristics:
@@ -339,16 +337,15 @@ We compared the available depths and velocities at the transect location points 
 
 ### Channel Unit Types
 
-Because there are multiple types of channel units, we employed a goodness-of-fit test for discrete multivariate data. This test compares the observed channel unit type that radio-tagged juveniles were found in with the proportion of channel unit types from the habitat availability dataset. The null hypothesis is that the "use" tags will be found in similar channel unit types relative to what is available. Because there are `r n_distinct(xs_all$channel_unit_type)` channel unit types, this leads to a large number of potential arrangements. Therefore, we used a Monte Carlo approach to simulate `r prettyNum(1e5, scientific=FALSE, big.mark = ",")` samples of $n$ observations ($n$ being the number of selected "use" channel units) using the habitat availability proportions of channel unit types. The p-value is then calculated by summing the relative frequencies of outcomes occurring less frequently than the observed ones, so a low p-value indicates that the observed "use" channel types are distributed differently that the available ones, suggesting that fish are not randomly distributed in overwinter habitat. We also used a log likelihood ratio goodness of fit test (G-test).
+Channel unit types included pools, riffles, runs, rapid+, small side-channels (SSC), and off-channel areas (OCA), similar to channel units delineated using the DASH protocol [@Carmichael2019]. Because there are multiple types of channel units, we employed a goodness-of-fit test for discrete multivariate data. This test compares the observed channel unit types that radio-tagged juveniles were observed using to the proportion of channel unit types from the habitat availability dataset. The null hypothesis was that radio-tagged juvenile Chinook salmon would be found in channel units in the same (or similar) proportion to what is available. Because there are `r n_distinct(xs_all$channel_unit_type)` distinct channel unit types, this leads to a large number of potential arrangements. Therefore, we used a Monte Carlo approach to simulate `r prettyNum(1e5, scientific=FALSE, big.mark = ",")` samples of $n$ observations ($n$ being the number of selected "use" channel units) using the habitat availability proportions of channel unit types. The p-value is then calculated by summing the relative frequencies of outcomes occurring less frequently than the observed ones, so a low p-value indicates that the observed "use" channel types are distributed differently that the available ones, suggesting that fish are not randomly distributed in overwinter habitat. We also used a log likelihood ratio goodness of fit test (G-test).
 
 ### Concealment
 
-Because concealment is binary (either available or not), we tested whether there were differences between habitat availability and use using a Chi-squared test, as well as a G-test.
-
+At each point of habitat availability transects and at observed "use" locations by radio-tagged individuals, we estimated whether concealment habitat was available to juvenile Chinook salmon. <!-- It might be worth including how we estimated availability (or not) of available concealment habitat. I can't recall the details. And is that a citable method, perhaps from CHaMP? -->Because concealment is binary (either available or not), we tested whether there were differences between habitat availability and use using a Chi-squared test, as well as a G-test.
 
 ### Cover
 
-For the purposed of our initial cover analysis, we grouped all types of cover into a single category, and compared that with the category of "no cover". This made cover a binary variable, like concealment, allowing us to also use the Chi-squared and G-test.
+We determined whether fish cover was available within 1.5 m of each habitat availability transect point and at each "use" location. Cover types considered included artificial cover, aquatic vegetation, boulders, small and large wood, terrestrial vegetation, and undercut banks. Here, we grouped all types of cover into a single category, and compared whether cover was available with the category of "no cover". This resulted in a binary variable, like concealment, allowing us to also use the Chi-squared and G-test.
 
 
 # Results
