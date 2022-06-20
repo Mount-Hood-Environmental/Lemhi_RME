@@ -335,7 +335,7 @@ Depth (m) and mean column velocity (m/s) were measured at 47 of the `r nrow(use_
 
 We compared the available depths and velocities at the transect location points (n = `r prettyNum(sum(xs_summary$n_pts), big.mark = ",")`; derived from raster available from 2D-numerical models) to the measured depths and velocities taken in the field during microhabitat use surveys. <!-- Is there a reason for not just using all depths and velocities from the raster, I can't recall. It seems we could fairly easily make that comparison.-->We used a variance test (F test; how far each data point is from the group mean), to evaluate variances between the habitat availability and habitat use datasets. This led us to use an unpooled, two-sample test (Welch test) to determine if there's a significant difference (p-value < 0.05) between mean available depth and velocity and mean selected depth and velocity in the lower Lemhi.     
 
-### Channel Unit Types
+### Channel Unit Type
 
 Channel unit types included pools, riffles, runs, rapid+, small side-channels (SSC), and off-channel areas (OCA), similar to channel units delineated using the DASH protocol [@Carmichael2019]. Because there are multiple types of channel units, we employed a goodness-of-fit test for discrete multivariate data. This test compares the observed channel unit types that radio-tagged juveniles were observed using to the proportion of channel unit types from the habitat availability dataset. The null hypothesis was that radio-tagged juvenile Chinook salmon would be found in channel units in the same (or similar) proportion to what is available. Because there are `r n_distinct(xs_all$channel_unit_type)` distinct channel unit types, this leads to a large number of potential arrangements. Therefore, we used a Monte Carlo approach to simulate `r prettyNum(1e5, scientific=FALSE, big.mark = ",")` samples of $n$ observations ($n$ being the number of selected "use" channel units) using the habitat availability proportions of channel unit types. The p-value is then calculated by summing the relative frequencies of outcomes occurring less frequently than the observed ones, so a low p-value indicates that the observed "use" channel types are distributed differently that the available ones, suggesting that fish are not randomly distributed in overwinter habitat. We also used a log likelihood ratio goodness of fit test (G-test).
 
@@ -352,9 +352,9 @@ We determined whether fish cover was available within 1.5 m of each habitat avai
 
 ## Habitat Availability Power Analysis
 
-Results of the habitat availability power analysis are shown in Figure \@ref(fig:dist-fig). 
+Comparisons of the distributions of depths and velocities estimated from 1) the randomly placed transects used to estimate habitat availability, and 2) the entirety of the rasters derived from 2D numerical models were favorable (Figure \@ref(fig:dist-fig)). Distributions of depths and velocities were similar among all sinuosity categories (Figure \@ref(fig:dist-fig)). These findings suggest that the habitat availability data collected during August 2019 were sufficient to capture the available habitat throughout the lower Lemhi River.
 
-```{r dist-fig, fig.cap = "Density plots of depth and velocity, colored by whether taken from the entire raster (All) or the sampled transects (Sampled), faceted by sinuosity category."}
+```{r dist-fig, fig.cap = "Density plots of depth and velocity, colored by whether taken from the entire raster (all) or the sampled transects (sampled), and faceted by sinuosity category."}
 comp_df %>%
   ggplot(aes(x = raster_val,
              color = source,
@@ -374,10 +374,11 @@ comp_df %>%
 
 ```
 
-
 ## Habitat Preference
 
 ### Sinuosity
+
+Habitat selected by radio-tagged juvenile Chinook salmon, during late fall and winter months, were fairly proportional to the available habitat among sinuosity categories (Figure \@ref(fig:sin-use)). In other words, Chinook salmon presmolts were *not* observed using reaches of the lower Lemhi River classified as "high sinuosity" at a higher rate than was available, which would suggest a preference. However, this could be due to fish not selecting for habitat on a more coarse (e.g., reach) scale, but rather on a finer (e.g., microhabitat) scale.<!-- This final statement is likely more appropriate for the Discussion-->
 
 ```{r sin-use, fig.cap = "Percent of available and selected habitat by sinuosity category in the lower Lemhi."}
 
@@ -407,8 +408,6 @@ xlab("Sinuosity Category")
 sin_use
 
 ```
-
-Comparatively, selected habitat is fairly proportional to the available habitat in each sinuosity category (Figure \@ref(fig:sin-use)), suggesting that fish are not selecting for habitat on a reach scale but rather on a microhabitat scale.
 
 ### Depth and Velocity
 
@@ -476,7 +475,7 @@ vel_tab
 ```
 There is a statistically significant difference between velocity availability and use in the lower Lemhi River (Table \@ref(tab:vel-tab), Figure \@ref(fig:vel-fig) ), suggesting that juvenile Chinook are selecting for limited, slow water habitat during the winter season. 
 
-### Channel Unit Types
+### Channel Unit Type
 
 ```{r cu-fig, fig.cap = "Percent of channel unit types available in the entire lower Lemhi compared with percent where fish were using them, faceted by low, medium and high sinuosity classes."}
 # channel unit bar plot by sinuosity category
@@ -583,7 +582,6 @@ cu_tab
 ```
 
 There are statistically significant differences in the distribution of channel units selected by radio-tagged juvenile Chinook salmon during winter months and what is available in the lower Lemhi River, across all three sinuosity categories (Table \@ref(tab:cu-tab)). It appears that juvenile Chinook salmon tend to use pools and off-channel areas at a higher frequency than their availability, and riffles at a lower frequency compared to what is available (Figure \@ref(fig:cu-fig)).
-
 
 ### Concealment
 
@@ -716,7 +714,6 @@ conceal_tab
 ```
 
 There appears to be very little difference in the substrate concealment between what is available and what is selected by juvenile Chinook salmon for both the medium and high sinuosity categories. There is a difference in the little sinuosity category (Table \@ref(tab:conceal-tab); however, Figure \@ref(fig:conceal-fig) indicates that in low sinuosity reaches, fish are more likely to select habitat that does not contain substrate concealment, contrary to our suspicions.
-
 
 ### Cover
 
