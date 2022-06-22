@@ -32,17 +32,6 @@ institute:
   - mhe_mccall: Mount Hood Environmental, PO Box 4282, McCall, Idaho, 83638, USA
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  bookdown::word_document2:
-    fig_caption: yes
-    reference_docx: "../templates/template.docx"
-    number_sections: FALSE
-    toc: no
-    always_allow_html: true
-    fig_width: 6
-    pandoc_args:
-    - --lua-filter=../templates/scholarly-metadata.lua
-    - --lua-filter=../templates/author-info-blocks.lua
-    - --lua-filter=../templates/pagebreak.lua  
   bookdown::html_document2:
     theme: yeti
     toc: yes
@@ -55,6 +44,17 @@ output:
     - --lua-filter=../templates/scholarly-metadata.lua
     - --lua-filter=../templates/author-info-blocks.lua
     - --lua-filter=../templates/pagebreak.lua
+  bookdown::word_document2:
+    fig_caption: yes
+    reference_docx: "../templates/template.docx"
+    number_sections: FALSE
+    toc: no
+    always_allow_html: true
+    fig_width: 6
+    pandoc_args:
+    - --lua-filter=../templates/scholarly-metadata.lua
+    - --lua-filter=../templates/author-info-blocks.lua
+    - --lua-filter=../templates/pagebreak.lua  
 csl: "../templates/american-fisheries-society.csl"
 bibliography:
   - AckermanLibrary.bib
@@ -97,11 +97,6 @@ theme_set(theme_bw())
 # habitat availability and use datasets
 load(here("analysis/data/derived_data/habitat_available.rda"))
 load(here("analysis/data/derived_data/habitat_use.rda"))
-
-# read in csv for availability and use depths and velocities
-avail_use_depth <- read_csv(here("analysis/data/derived_data/avail_use_depth.csv"))
-avail_use_vel   <- read_csv(here("analysis/data/derived_data/avail_use_vel.csv"))
-
 ```
 
 ```{r clean-data}
@@ -119,7 +114,7 @@ xs_all = xs_use %>%
          frazil_ice = frazel_ice) %>%
   # correct the code for small side channels
   mutate(channel_unit_type = recode(channel_unit_type,
-                                    `SC` = "SSC")) %>%
+                                     `SC` = "SSC"))%>%
   # round distance to cover to nearest 0.1m and rename
   mutate(distance_to_cover = round(distance_to_cover_round_to_nearest_0_1m, 1)) %>%
   select(-distance_to_cover_round_to_nearest_0_1m) %>%
@@ -139,7 +134,7 @@ xs_all = xs_use %>%
   # add a variable of whether there's any cover present within 1.5m
   mutate(has_cover = if_else(dominant_cover_type_1_5m_radius %in% c("No Cover", "Unknown") |
                                is.na(dominant_cover_type_1_5m_radius), "No", "Yes")) %>%
-  # add variable for new selected habitat (filtering out duplicate selected locations and locations with mean velocity > 0.5 m/s)
+  # add variable for new selected habitat (filtering out duplicate selected locations 
   mutate(habitat_selected_new = if_else(habitat_selected == "Selected" & same_location_as_last_survey == "no", "Yes", "No"))
 
 xs_summary = xs_all %>%
@@ -157,7 +152,7 @@ Habitat requirements for fish include physical and biological components necessa
 
 ## Objectives
 
-The goal of this study was to characterize microhabitat use and preference for juvenile Chinook salmon *O. tshawytscha* in the lower Lemhi River during winter months. Habitat availability and use data were collected in the lower Lemhi River using methods similar to those described by @Favrot2018 previously implemented in Catherine Creek, Oregon. We used similar habitat availability and use data to describe habitat selection and preference of juvenile Chinook salmon overwintering in the lower Lemhi River, which can in turn be used to inform target habitat conditions to be used in habitat restoration planning and designs.
+The goal of this study was to characterize microhabitat use and preference for juvenile Chinook salmon *O. tshawytscha* in the lower Lemhi River during late fall and winter months. Habitat availability and use data were collected in the lower Lemhi River using methods similar to those described by @Favrot2018 previously implemented in Catherine Creek, Oregon. We used similar habitat availability and use data to describe habitat selection and preference of juvenile Chinook salmon overwintering in the lower Lemhi River, also called presmolts (juveniles surviving to their first winter prior to spring emigration), which can in turn be used to inform target habitat conditions to be used in habitat restoration planning and designs.
 
 
 # Methods
@@ -204,7 +199,7 @@ sin_tbl
 
 ```
 
-We then randomly sampled an approximately equal number of points within each sinuosity category (Table \@ref(tab:xs-table)) and transects were placed at a right angle to the flow at each of the sampled points. At each transect, we then started at the wetted width midpoint (`xs_point_number = 0`) of the river and sampled every 1m to river right and river left (facing downstream), including the midpoint, to the wetted margin. Points to river right were designated positive (+) and points towards river left were designated negative (-) and habitat availability measurements were taken at each point.<!-- Need to verify those previous statements. Did we sample each meter and was river right (facing downstream) designated positive?--> Habitat availability measurements described channel unit type, bank condition, dominant substrate, availability of substrate concealment, presence of adjacent side channels, dominant cover type, and distance to cover. In addition, depth and velocity estimates for each point were available from LiDAR-derived 2D numerical models. In total, habitat measurements were collected from `r nrow(xs_summary)` transects and `r prettyNum(sum(xs_summary$n_pts), big.mark = ",")` points, resulting in an average of `r round(sum(xs_summary$n_pts) / nrow(xs_summary), 1)` points per transect.
+We then randomly sampled an approximately equal number of points within each sinuosity category (Table \@ref(tab:xs-table)) and transects were placed at a right angle to the flow at each of the sampled points. At each transect, we then started at the wetted width midpoint (`xs_point_number = 0`) of the river and sampled every 1m to river right and river left (facing downstream), including the midpoint, to the wetted margin. Points to river right were designated positive (+) and points towards river left were designated negative (-) and habitat availability measurements were taken at each point. Habitat availability measurements described channel unit type, bank condition, dominant substrate, availability of substrate concealment, presence of adjacent side channels, dominant cover type, and distance to cover. In addition, depth and velocity estimates for each point were available from LiDAR-derived 2D numerical models. In total, habitat measurements were collected from `r nrow(xs_summary)` transects and `r prettyNum(sum(xs_summary$n_pts), big.mark = ",")` points, resulting in an average of `r round(sum(xs_summary$n_pts) / nrow(xs_summary), 1)` points per transect.
 
 ```{r xs-table}
 xs_tbl = tibble(
@@ -231,9 +226,9 @@ xs_tbl
 
 ## Habitat Use
 
-Microhabitat use data were collected from radio-tagged juvenile Chinook salmon in the lower Lemhi River beginning in November 2019 through March 2020. For this study, a total of 279 fish were tagged from October 9 - 31, 2019 at three rotary screw trap (RST) locations in the Lemhi River: upper Lemhi RST (LEMTRP), Hayden Creek RST (HYDTRP), and lower Lemhi RST (LLRTRP). <!-- Were any fish from the lower Lemhi RST actually used in this assessment? The initial intent was to only use those fish tagged at the upper traps for this habitat availability and use assessment. Fish tagged at the lower Lemhi RST were used to assess movement and distribution of DSR juveniles into and through the Salmon River. Please clarify and make sure sample sizes are correct.-->Advanced Telemetry Systems, Inc. (ATS; hhtps://atstrack.com) radio transmitters (Model #ST100L) were surgically implanted into the abdomen of Chinook salmon presmolts (juveniles surviving to their first winter prior to spring emigration), ranging in length from 98 - 138 mm and weight from 10.4 - 31.1 g. Fish were also implanted with a Passive Integrated Transponder tag (PIT tag). Tagged fish were held for a minimum of six hours in live wells and released at night below the tagging sites once they had fully recovered from surgery.
+Microhabitat use data were collected from radio-tagged presmolt Chinook salmon in the lower Lemhi River beginning in November 2019 through March 2020. A total of 279 fish were tagged from October 9 - 31, 2019 at three rotary screw trap (RST) locations in the Lemhi River: upper Lemhi RST (LEMTRP), Hayden Creek RST (HYDTRP), and lower Lemhi RST (LLRTRP). Advanced Telemetry Systems, Inc.(ATS; https://atstrack.com) radio transmitters (Model #ST100L) were surgically implanted into the abdomen of presmolt Chinook, ranging in length from 98 - 138 mm and weight from 10.4 - 31.1 g. Fish were also implanted with a Passive Integrated Transponder tag (PIT tag). Tagged fish were held for a minimum of six hours in live wells and released at night below the tagging sites once they had fully recovered from surgery.
 
-Because of limited battery life, radio tags were programmed to operate in three batches to cover the entire winter season. Batch 1 transmitters (181 fish) were programmed to operate continuously upon activation, batch 2 transmitters (47 fish) operated for an hour upon activation then shutdown to reactivate at day 50, and batch 3 transmitters (51 fish) operated for an hour upon activation then shutdown to reactivate at day 100.<!-- Make sure this is correct after deciding upon inclusion/exclusion of lower Lemhi RST fish -->
+Because of limited battery life, radio tags were programmed to operate in three batches to cover the entire winter season. Batch 1 transmitters (181 fish) were programmed to operate continuously upon activation, batch 2 transmitters (47 fish) operated for an hour upon activation then shutdown to reactivate at day 50, and batch 3 transmitters (51 fish) operated for an hour upon activation then shutdown to reactivate at day 100.
 
 Throughout the winter, mobile tracking surveys were completed by boat and on foot, dependent on weather and river conditions.  Surveys covered 50 km of the lower Lemhi River from its confluence with Hayden Creek downstream to its confluence with the Salmon River and were completed approximately every two weeks. When a transmitter was detected, surveyors pin-pointed the signal location to the finest scale possible (typically $< 1 m^2$), attempted to determine whether the tag was in a live fish, and recorded the location using an EOS Arrow 100 GNSS GPS receiver. Habitat use metrics describing channel unit type, bank condition, dominant substrate, availability of substrate concealment, dominant cover type, distance to cover, depth, and mean column velocity, were also collected at each tag location for comparison with the habitat availability dataset. 
 
@@ -249,11 +244,14 @@ use_unique <- xs_use %>%
 
 #summarize count of qualified, unique observations
 use_selected <- xs_all %>%
-  filter(habitat_selected_new == "Yes")
+  filter(habitat_selected_new == "Yes") 
 
+#summarize count of qualified, unique observation by unique radio tag
+unique_tag <- use_selected %>%
+  distinct(radio_frequency)
 ```
 
-Mobile tracking surveys resulted in the detection of `r nrow(use_unique)` unique radio tags of which `r nrow(use_recovered)` were physically recovered (one confirmed mortality). The high recovery rate of detected tags (22%) combined with the inability to confirm tag detections as live fish created some uncertainty about the validity of fish use data. <!-- I don't love this previous statement. First, 22% doesn't seem high. What do you mean here? Second, this is a limitation among many radio tracking studies. Isn't it sufficient instead to say something like "We used a decision tree developed using information from Holleman et al. (2022) and professional expertise in an attempt to identify those locations being utilized by fish.". I don't love that statement, but something along those lines. Otherwise, let's leave discussion of our limitations for the Discussion section. -->To address this, a decision tree was developed based on professional expertise and published literature [@Holleman2022] to qualify tag detection locations as selected for habitat (Figure \@ref(fig:tree-fig)). Using the decision tree, `r nrow(use_selected)` unique selected habitat locations were identified.<!-- How many fish were included in these 74 unique locations-->
+Mobile tracking surveys resulted in `r nrow(xs_use)` observations of `r nrow(use_unique)` radio tagged Chinook.  Of those `r nrow(use_unique)` tags, `r nrow(use_recovered)` were physically recovered from the river (one confirmed mortality). To further refine our analysis to include only those locations deemed utilized by fish, we used a decision tree (Figure \@ref(fig:tree-fig)) developed by combining information from Holleman et al. (2022) and professional judgement. This resulted in `r nrow(use_selected)` unique habitat locations utilized by `r nrow(unique_tag)` fish.
 
 ```{r tree-fig, out.width = "500px", fig.align = "center", fig.cap = "Decision tree for determining qualified tag detection locations as selected habitat." }
 knitr::include_graphics(here("analysis/images/D_tree.jpg"))
@@ -331,9 +329,9 @@ We estimate the proportion of the total available habitat in the lower Lemhi Riv
 
 ### Depth and Velocity
 
-Depth (m) and mean column velocity (m/s) were measured at 47 of the `r nrow(use_selected)` selected habitat locations during typical winter flows. Environmental conditions at the time of sampling, primarily surface ice and depth, prevented collection of depth and velocity measurements at some locations, likely introducing some bias e.g., use locations with the greatest depths were most difficult to measure. However, because our decision tree accounted for velocity limits of sustained swimming of juvenile salmonids, we feel confident the locations where mean column velocity was measured is a representative sample of habitat use locations in the lower Lemhi.<!-- This last statement is likely more appropriate for the Discussion. I think it's still worth recognizing here, but might be a more simple statement like "This bias is likely less prevalent in the velocity use dataset, as juvenile Chinook salmon tend to select areas of lower velocities during winter months (citation) and we were more able to sample those locations." Something to that effect.-->
+Depth (m) and mean column velocity (m/s) were measured at 47 of the `r nrow(use_selected)` selected habitat locations during typical winter flows. Environmental conditions (surface ice and depth) at the time of sampling prevented safe collection of depth and velocity measurements at some locations. This likely introduced some bias, particularly excluding locations with the greatest depths. This bias is likely less prevalent in the velocity use dataset, as presmolt Chinook salmon tend to select areas of lower velocities during winter months #(Cunjack 1996)# and we were more able to sample those locations.
 
-We compared the available depths and velocities at the transect location points (n = `r prettyNum(sum(xs_summary$n_pts), big.mark = ",")`; derived from raster available from 2D-numerical models) to the measured depths and velocities taken in the field during microhabitat use surveys. <!-- Is there a reason for not just using all depths and velocities from the raster, I can't recall. It seems we could fairly easily make that comparison.-->We used a variance test (F test; how far each data point is from the group mean), to evaluate variances between the habitat availability and habitat use datasets. This led us to use an unpooled, two-sample test (Welch test) to determine if there's a significant difference (p-value < 0.05) between mean available depth and velocity and mean selected depth and velocity in the lower Lemhi.     
+We compared the available depths and velocities for the entire lower Lemhi River (derived from 2D numerical modeling raster data) to the measured depths and velocities taken in the field during microhabitat use surveys. We used a variance test (F test; how far each data point is from the group mean), to evaluate variances between the habitat availability and habitat use datasets. This led us to use an unpooled, two-sample test (Welch test) to determine if there's a significant difference (p-value < 0.05) between mean available depth and velocity and mean selected depth and velocity.     
 
 ### Channel Unit Type
 
@@ -341,7 +339,7 @@ Channel unit types included pools, riffles, runs, rapid+, small side-channels (S
 
 ### Concealment
 
-At each point of habitat availability transects and at observed "use" locations by radio-tagged individuals, we estimated whether concealment habitat was available to juvenile Chinook salmon. <!-- It might be worth including how we estimated availability (or not) of available concealment habitat. I can't recall the details. And is that a citable method, perhaps from CHaMP? -->Because concealment is binary (either available or not), we tested whether there were differences between habitat availability and use using a Chi-squared test, as well as a G-test.
+At each point of habitat availability transects and at observed "use" locations by radio-tagged individuals, we estimated whether concealment habitat was available to Chinook salmon presmolts. <!-- It might be worth including how we estimated availability (or not) of available concealment habitat. I can't recall the details. And is that a citable method, perhaps from CHaMP? -->Because concealment is binary (either available or not), we tested whether there were differences between habitat availability and use using a Chi-squared test, as well as a G-test.
 
 ### Cover
 
@@ -381,7 +379,7 @@ comp_df %>%
 
 ### Sinuosity
 
-Sinuosity categories selected by radio-tagged juvenile Chinook salmon, during later fall and winter months, were similar to the proportions of available habitat (Figure \@ref(fig:sin-use)). In other words, Chinook salmon presmolts were *not* observed using "high" sinuosity reaches of the lower Lemhi River at a higher rate than was available, as we might expect. However, sinuosity categories were calculated at the 500 m reach scale, and this observation could be (at least partially) due to fish not selecting for habitat at this more coarse (e.g., reach) scale, but rather at a finer (e.g., microhabitat) scale.<!-- This final statement might be more appropriate for the Discussion.--> 
+Sinuosity categories selected by radio-tagged Chinook salmon presmolts, during later fall and winter months, were similar to the proportions of available habitat (Figure \@ref(fig:sin-use)). In other words, presmolts were *not* observed using "high" sinuosity reaches of the lower Lemhi River at a higher rate than was available, as we might expect. 
 
 ```{r sin-use, fig.cap = "Percent of available and selected habitat by sinuosity category in the lower Lemhi."}
 # percentage available habitat by sinuosity
@@ -420,11 +418,23 @@ The distributions between available stream depths and those depths used by Chino
 
 ```{r depth-fig, fig.cap = "Distributions of all available stream depths in the lower Lemhi River derived from a 2D numerical model (available) and depths used by radio-tagged juvenile Chinook salmon during late fall and winter months (use)."}
 # boxplot comparisons for available/use depths/velocities
-depth_box = avail_use_depth %>%
+depth_avail = d_v_avail_sin %>%
+  filter(metric == "depth") %>%
+  rename("Depth" = value, "Habitat" = metric) %>%
+  select(Depth, Habitat) %>%
   mutate(Habitat = recode(Habitat,
-                          `available` = "Available",
-                          `use` = "Used")) %>%
-  ggplot(aes(x = Habitat,
+                        depth = "Available"))
+
+use_depth <- use_selected %>%
+  rename("Depth"= depth_m, "Habitat" = habitat_selected) %>%
+  select(Depth, Habitat) %>%
+  mutate(Habitat = recode(Habitat,
+                                 Selected = "Used")) %>%
+  na.omit(Depth) %>%
+  bind_rows(depth_avail)
+
+  depth_plot <- use_depth %>%
+    ggplot(aes(x = Habitat,
              y = Depth,
              fill = Habitat)) +
   geom_boxplot() +
@@ -433,13 +443,13 @@ depth_box = avail_use_depth %>%
   scale_fill_brewer(palette = "Set2") +
   labs(x = "",
        y = "Depth (m)")
-depth_box
+depth_plot
 
 ```
 
 ```{r depth-tab}
 # Welch t-test for depth
-depth_tab = t.test(Depth ~ Habitat, data = avail_use_depth) %>%
+depth_tab = t.test(Depth ~ Habitat, data = use_depth) %>%
   tidy() %>%
   select(estimate1,
          estimate2,
@@ -454,15 +464,26 @@ depth_tab
 
 ```
 
-Mean stream velocities used by Chinook salmon presmolts were significantly lower than those available throughout the lower Lemhi River (Figure \@ref(fig:vel-fig); Table \@ref(tab:vel-tab), suggesting that juvenile Chinook salmon are selecting for slower water habitats during late fall and early winter months.
+Mean stream velocities used by Chinook salmon presmolts were significantly lower than those available throughout the lower Lemhi River (Figure \@ref(fig:vel-fig); Table \@ref(tab:vel-tab), suggesting that presmolts are selecting for slower water habitats during late fall and early winter months.
 
 ```{r vel-fig, fig.cap = "Distributions of all available stream velocities in the lower Lemhi River derived from a 2D numerical model (available) and velocities used by radio-tagged juvenile Chinook salmon during late fall and winter months (use)."}
 # Basic box plot
-vel_box = avail_use_vel %>%
-   mutate(Habitat = recode(Habitat,
-                          `available` = "Available",
-                          `use` = "Used")) %>%
-  ggplot(aes(x = Habitat,
+vel_avail = d_v_avail_sin %>%
+  filter(metric == "velocity") %>%
+  rename("Velocity" = value, "Habitat" = metric) %>%
+  select(Velocity, Habitat) %>%
+  mutate(Habitat = recode(Habitat,
+                        velocity = "Available"))
+use_vel <- use_selected %>%
+  rename("Velocity"= mean_column_velocity, "Habitat" = habitat_selected) %>%
+  select(Velocity, Habitat) %>%
+  mutate(Habitat = recode(Habitat,
+                                 Selected = "Used")) %>%
+  na.omit(Velocity) %>%
+  bind_rows(vel_avail)
+  
+  vel_plot <- use_vel %>%
+    ggplot(aes(x = Habitat,
              y = Velocity, 
              fill = Habitat)) + 
   geom_boxplot() +
@@ -471,14 +492,14 @@ vel_box = avail_use_vel %>%
   scale_fill_brewer(palette = "Set2") +
   labs(x = "",
        y = "Velocity (m/s)")
-vel_box
+vel_plot
 
 ```
 
 ```{r vel-tab}
 # Welch t test for velocity
 vel_tab = t.test(Velocity ~ Habitat, 
-               data = avail_use_vel) %>%
+               data = use_vel) %>%
   tidy() %>%
   select(estimate1,
          estimate2,
@@ -495,7 +516,37 @@ vel_tab
 
 ### Channel Unit Type
 
-There were significant differences in the distribution of channel unit types used by radio-tagged juvenile Chinook salmon during winter months and what is available throughout the lower Lemhi River, across all three sinuosity categories (Table \@ref(tab:cu-tab)). Juvenile Chinook salmon appear to use pools and off-channel areas at a higher proportion relative to their availability, and riffles at a lower proportion compared to what is available (Figure \@ref(fig:cu-fig)).
+There were significant differences in the distribution of channel unit types used by Chinook salmon presmolts and what is available throughout the lower Lemhi River.  We can see that the proportion of slow water habitat (i.e., pools, runs, OCAs) being used in larger percentages than what is available in the lower Lemhi River (Figure \@ref(fig:cu-per)).  This applies to small side channel habitat too.  When we use the same comparison in the context of the three sinuosity categories, we see similar results (Table \@ref(tab:cu-tab)). Presmolts appear to use pools and off-channel areas at a higher proportion relative to their availability, and riffles at a lower proportion compared to what is available across all sinuosity categories (Figure \@ref(fig:cu-fig)).
+
+```{r cu-per, fig.cap = "Percent of channel unit type for available and used habitat."}
+
+# compare percent of available and used channel unit types
+cu_use <- xs_all %>%
+filter(habitat_selected_new == "Yes") %>%
+select(channel_unit_type) %>%
+count(channel_unit_type) %>%
+mutate(percent = (n/sum(n))) %>%
+add_column(Habitat = "Used")
+
+cu_per <- xs_avail %>%
+select(channel_unit_type) %>%
+count(channel_unit_type) %>%
+mutate(percent = (n/sum(n))) %>%
+mutate(channel_unit_type = recode(channel_unit_type, SC="SSC")) %>%
+add_column(Habitat = "Available") %>%
+bind_rows(cu_use) %>%
+ggplot(mapping = aes(x=channel_unit_type,
+                     y=percent,
+                     fill = Habitat)) +
+geom_bar (position = "dodge", stat = "identity") +
+scale_fill_brewer(palette = "Set2") +
+theme(plot.title = element_text(hjust = 0.5),
+                     legend.position = "bottom") +
+ylab("Percent") +
+xlab("Channel Unit Type")
+cu_per
+```
+
 
 ```{r cu-fig, fig.cap = "Percent of channel unit types available in the entire lower Lemhi compared with percent where fish were using them, faceted by low, medium and high sinuosity classes."}
 # channel unit bar plot by sinuosity category
@@ -606,7 +657,7 @@ cu_tab
 
 ### Concealment
 
-We observed little/no difference between the proportion of locations where concealment substrate was available and locations used by juvenile Chinook salmon with concealment habitat, for both the medium and high sinuosity categories (Figure \@ref(fig:conceal-fig)). There was a significant difference within the low sinuosity category (Table \@ref(tab:conceal-tab)); however; Figure \@ref(fig:conceal-fig) indicates that in low sinuosity reaches, fish were more likely to select habitat that does not contain substrate concealment, contrary to our suspicions.
+We observed little/no difference between the proportion of locations where concealment substrate was available and locations used by Chinook salmon presmolts with concealment habitat, for both the medium and high sinuosity categories (Figure \@ref(fig:conceal-fig)). There was a significant difference within the low sinuosity category (Table \@ref(tab:conceal-tab)); however; Figure \@ref(fig:conceal-fig) indicates that in low sinuosity reaches, fish were more likely to select habitat that does not contain substrate concealment, contrary to our suspicions.
 
 ```{r conceal-fig, fig.cap = "Proportion of locations where concealment habitat was available throughout the lower Lemhi River compared with the proportion where fish had selected, faceted by low, medium and high sinuosity classes."}
 # concealment figure
@@ -741,7 +792,7 @@ conceal_tab
 
 ### Cover
 
-Radio-tagged juvenile Chinook salmon were more likely to select habitat where some form of cover was available (within a 1.5 m radius), compared to what was available, including across all three sinuosity categories (Figure \@ref(fig:cover-fig); Table \@ref(tab:cover-tab)).
+Chinook salmon presmolts were more likely to select habitat where some form of cover was available (within a 1.5 m radius), compared to what was available, including across all three sinuosity categories (Figure \@ref(fig:cover-fig); Table \@ref(tab:cover-tab)).
 
 ```{r cover-fig, fig.cap = "Proportion of transect points where cover was available throughout the entire lower Lemhi River compared to the proportion where fish had selected, faceted by low, medium, and high sinuosity categories."}
 cover_fig = xs_all %>%
@@ -862,61 +913,60 @@ cover_tab
 
 ```
 
-<!-- You can consider removing the headings within the Discussion after you get it buttoned up. I like breaking up the Methods and Results so that the reader can easily go back and forth, but within the Discussion it always seems to break up the flow a bit. The Methods and Results should be more "sciency" whereas the Discussion can be a little more informal.-->
 # Discussion
 
-In this study, we identified that radio-tagged juvenile Chinook salmon selected for slower stream velocities than was typically available in the lower Lemhi River during the late fall and winter months; and further, selected for slow-water channel unit types, including pools and off-channel areas, at a higher rate than those types were available. Additionally, we identified that juveniles selected for locations with adjacent cover (of any type), regardless of the reach-scale sinuosity of the river. We did not identify a pattern regarding the selection (or not) of locations with available concealment habitat. In the following, we further discuss these results and potential limitations of our dataset that should be considered during interpretation.
+In this study, we identified that radio-tagged Chinook salmon presmolts selected for slower stream velocities than was typically available in the lower Lemhi River during the late fall and winter months; and further, selected for slow-water channel unit types, including pools and off-channel areas, at a higher rate than those types were available. Additionally, we identified that presmolts selected for locations with adjacent cover (of any type), regardless of the reach-scale sinuosity of the river. We did not identify a pattern regarding the selection (or not) of locations with available concealment habitat. In the following, we further discuss these results and potential limitations of our dataset that should be considered during interpretation.
 
 ## Habitat Availability Power Analysis
 
-The distributions of the depths and velocities from the sampled transects and the rasters covering the entirety of the lower Lemhi River were<!--be consistent on tense, let's (for the most part) use past tense throughout--> nearly identical within each sinuosity class. This suggested that the sampled transects sufficiently captured the distribution of available habitat, and did not need to be supplemented with additional transects. Certainly, we were interested in habitat metrics beyond depth and velocity, but without somehow simulating the true distributions of those metrics (e.g., substrate class, fish cover, etc.)) it would have been difficult to conduct a worthwhile power analysis to evaluate whether the current dataset was sufficient to capture those distributions. Depth and velocity were used as proxies for other habitat characteristics, because we had model outputs for them across the entire lower Lemhi River, which we treated as the "truth". We feel that the habitat availability dataset available from line transects in the lower Lemhi River is sufficient to capture the true available habitat.
+The distributions of the depths and velocities from the sampled transects and the rasters covering the entirety of the lower Lemhi River were nearly identical within each sinuosity class. This suggested that the sampled transects sufficiently captured the distribution of available habitat, and did not need to be supplemented with additional transects. Certainly, we were interested in habitat metrics beyond depth and velocity, but without somehow simulating the true distributions of those metrics (e.g., substrate class, fish cover, etc.)) it would have been difficult to conduct a worthwhile power analysis to evaluate whether the current dataset was sufficient to capture those distributions. Depth and velocity were used as proxies for other habitat characteristics, because we had model outputs for them across the entire lower Lemhi River, which we treated as the "truth". We feel that the habitat availability dataset available from line transects in the lower Lemhi River is sufficient to capture the true available habitat.
 
 ## Habitat Preference
 
-### Sinuosity
+We hypothesized that Chinook salmon presmolts would select high sinuosity reaches in the lower Lemhi River at a higher rate than they were available; however, this was not the case (Figure \@ref(fig:sin-use)). There did not appear to be a real pattern in fish use relative to sinuosity categories. Our theory was that high sinuosity reaches of the lower Lemhi River would be more likely to have low velocity areas and slow-water channel units which are typically more appealing to presmolts (supported by findings here). That didn't necessarily seem to be the case, though, as all sinuosity categories appeared to have similar distributions of velocity (Figure \@ref(fig:dist-fig)) despite high sinuosity reaches having higher pool frequency (Figure \@ref(fig:cu-fig)). These findings may suggest that Chinook salmon presmolts are not selecting for habitat at the reach scale, but rather more at a microhabitat scale.
 
-We hypothesized that juvenile Chinook salmon would select high sinuosity reaches in the lower Lemhi River at a higher rate than they were available; however, this was not the case (Figure \@ref(fig:sin-use)). There did not appear to be a real pattern in fish use relative to sinuosity categories. Our theory was that high sinuosity reaches of the lower Lemhi River would be more likely to have low velocity areas and slow-water channel units which are typically more appealing to juvenile Chinook salmon (supported by findings here). That didn't necessarily seem to be the case, though, as all sinuosity categories appeared to have similar distributions of velocity (Figure \@ref(fig:dist-fig)) despite high sinuosity reaches having higher pool frequency (Figure \@ref(fig:cu-fig)). These findings may suggest that juvenile Chinook salmon are not selecting for habitat at the reach scale, but rather more at a micro-habitat scale at which the fish is experiencing. 
+While our analysis demonstrated a significant difference between the mean water depth used by Chinook salmon presmolts and the mean available depth (Table \@ref(tab:depth-tab), with fish selecting for shallower depths, we believe this result could partially be explained by a sampling bias. For example, some depths were not collected at fish use locations because, at the time of sampling, those locations were too deep to safely and accurately measure. Had these omitted data points been included, bias in observed depths may have been reduced (albeit to an unknown degree), and a significant difference may not have been found.
 
-### Depth and Velocity
+Alternatively, some locations where radio tags were detected were considered non-selected habitat based on velocity. Any locations with velocities greater than 0.7 m/s were excluded as potential use locations because those velocities exceed the sustained swimming capability of the average sized Chinook salmon tagged for this study #(Holleman et al 2020)#.   
 
-While our analysis demonstrated a<!--You don't have to say "statistically". The word significant suggest that a statistical test was completed and a significance was found (or at least it should).--> significant difference between the mean water depth used by juvenile Chinook salmon and the mean available depth, with fish selecting for shallower depths, we believe this result could partially be explained by a sampling bias. For example, some depths were not collected at fish use (tag) locations because, at the time of sampling, those locations were too deep to safely and accurately measure. Had these omitted data points been included, bias in used depths may have been reduced (albeit to an unknown degree), and a significant difference may not have been found.
+Through velocity and channel unit analysis, we showed that Chinook salmon presmolts selected slower velocity channel unit types (pools and off-channel areas) at a higher frequency than was available throughout the lower Lemhi River (Figure \@ref(fig:cu-fig)). This supports the idea that these fish are seeking refuge from high velocities (i.e., riffles) which could be an important survival and fitness strategy during the winter months when fish are trying to maintain condition factor.
 
-Alternatively, we feel the significant difference in stream velocities found at the used locations compared to the available stream velocities to be a valid and interesting finding. Had higher velocities been included in the dataset to potentially shift the use distribution, those locations would have been filtered out based on literature detailing the upper limit of sustained swimming for juvenile salmonids (used as criteria in decision tree for qualifying habitat use). Strikingly, the mean velocity for available habitat (0.99 m/s) is significantly greater than the upper limit for sustained swimming speed (0.67 m/s) of a 111 mm fish, the average size among juvenile Chinook salmon in our study.<!-- This explanation is worded "oddly". Rather, just say that any locations with velocities greater than x m/s were excluded as potential use locations because those velocities exceed the sustained swimming capability of juvenile Chinook salmon; however, we don't believe this to bias our results as we truly believe juvenile Chinook salmon would not utilize those locations (maybe include a citation). Emphasize that we believe this to be an interesting and useful result and that juvenile Chinook salmon likely do use low velocity areas in the lower Lemhi River as refugia.-->
+Contrary to our hypothesis, there was more concealment habitat available in the lower Lemhi River than what was being used by presmolts, at least in low sinuosity reaches (Figure \@ref(fig:conceal-fig)). This may be partially explained by fish instead seeking and preferring slow velocity habitats, which are generally associated with finer bed material (i.e., gravel, sands, fines) deposition. Chinook salmon presmolts may not be selecting for areas where concealment is absent, but rather it may be that stream velocity is a more important habitat component than substrate concealment. Also, while surveyors did their best to categorize substrate accurately, turbidity in the Lemhi River, especially at higher winter flows, made substrate observations challenging.
 
-### Channel Unit Type
+We showed that presmolts selected for microhabitats with cover (within a 1.5 m radius) in greater proportions than was available throughout the lower Lemhi River. Although we did not compare availability and use of dominant cover type (large and small wood, terrestrial and aquatic vegetation, boulder, and undercut bank), we don't believe the type of cover to be overly important, rather that cover is readily available. <!--We believe this finding could be understated, as well. The microhabitat availability surveys were conducted in August, when overhanging vegetation was likely more prominent and with leaves. In the winter, during microhabitat use surveys, trees and plants had lost their leaves resulting in less available cover, at least for overhanging vegetation. The magnitude of the bias resulting from the difference in timing of surveys is unknown; however, should be considered in the context of the seasonality of the two surveys-->.  
 
-We showed that juvenile Chinook salmon selected slower velocity channel unit types (pools and off-channel areas) at a higher frequency than was available throughout the lower Lemhi River. This supports the idea that these fish are seeking refuge from high velocities (i.e., riffles) which could be an important survival and fitness strategy during the winter months when fish are trying to maintain condition factor.
+### Conclusions
 
-Statistical analysis<!--Statisical analysis didn't show anything. You showed something using a significant test! --> shows juvenile Chinook selecting for pools and off-channel areas at a higher frequency than what is available.<!-- Delete this sentence after review-->
+```{r cu-use}
+# Percent of "used" observations by channel unit across pooled sinuosity categories
+cu_use <- use_selected %>%
+group_by(channel_unit_type) %>% 
+    summarise(percent = 100 * n() / nrow("Category"))
+cu_use
+```
 
-### Concealment
+```{r cu-avail}
+# Percent of available channel units across pooled sinuosity categories
+cu_avail <- xs_avail %>%
+  group_by(channel_unit_type) %>% 
+    summarise(percent = 100 * n() / nrow(Category) )
+cu_avail
+```
 
-Contrary to our hypothesis, there was more concealment habitat available in the lower Lemhi River than what was being used by juvenile Chinook, at least in low sinuosity reaches (Figure \@ref(fig:conceal-fig)). This may be partially explained by fish instead seeking and preferring slow velocity habitats, which are generally associated with finer bed material (i.e., gravel, sands, fines) deposition. Juvenile Chinook salmon<!--we go back and forth between juvenile Chinook salmon, presmolts, Chinook salmon during late fall and winter months, etc. It may be better to just define exactly what we're talking about early and then stick with one nomenclature e.g., maybe presmolts which are also just DSR juveniles during the late fall and winter--> may not be selecting for areas where concealment is absent, but rather it may be that stream velocity is a more important habitat component than substrate concealment. Also, while surveyors did their best to categorize substrate accurately, turbidity in the Lemhi River, especially at higher winter flows, made substrate observations challenging.
 
-### Cover
+We identified that Chinook salmon presmolts selected for slower velocity microhabitats and channel unit types, and preferred locations with cover.  More specfically, slow water channel units (pool, run and off-channel areas) accounted for 70.3% of the habitat used by presmolts where as only 36.4% of available habitat consists of slow water channel units (Figure \@ref(fig:cu-per)). Presmolts aim to maintain their body condition (weight) through winter months to increase the chances of survival through the mainstem corridor and to the ocean, increasing potential lifetime success. Slow velocity areas allow them to preserve energy and weight. Cover both provides opportunity for (helps create) small areas of reduced velocity while also allowing for predator avoidance. The overall goal is to make it to spring high flows as fat as possible with the aim of maximizing the probability of survival. We believe that restoration efforts in the lower Lemhi River with the goal of improving overwintering habitat should increase the amount and frequency of slow-water habitats with available cover.
 
-We showed that juvenile Chinook salmon selected for microhabitats with cover (within a 1.5 m radius) in greater proportions than was available throughout the lower Lemhi River. We believe this finding could be understated, as well. The microhabitat availability surveys were conducted in August, when overhanging vegetation was likely more prominent and with leaves. In the winter, during microhabitat use surveys, trees and plants had lost their leaves resulting in less available cover, at least for overhanging vegetation. The magnitude of the bias resulting from the difference in timing of surveys is unknown; however, should be considered in the context of the seasonality of the two surveys.  
-
-### Conclusions 
-
-We identified that juvenile Chinook salmon selected for slower velocity microhabitats and channel unit types, and preferred locations with cover. Our habitat availability surveys additionally suggest that this habitat type may be limiting throughout the lower Lemhi River (Figure \@ref(fig:cu-fig)). <!--Perhaps write our a specific result, e.g., "Juvenile Chinook salmon use locations were identified in pools and off-channel areas in xx% of observations, pooling across sinuosity categories, whereas those habitats only represent xx% of the total available habitat in the lower Lemhi River." And maybe include similar statements in the Results. -->We believe that restoration efforts in the lower Lemhi River directed at improving overwintering habitat should look towards increasing the availability of slow-water habitats with available cover.
-
-<!--Somewhere make a note that we lumped cover types, but we don't believe the type of cover to be overly important. Fish might prefer a tire as much as they prefer a log. -->
-
-<!--Include a discussion of why fish might select for slower velocity habitats with cover during winter months. E.g., juvenile Chinook salmon aim to maintain their body condition (weight) through winter months to increase the chances of survival through the mainstem corridor and to the ocean, increasing potential lifetime success. Slow velocity areas allow them to preserve energy and weight. Cover both provides opportunity for (helps create) small areas of reduced velocity while also allowing for predator avoidance. The overall goal is to make it to spring high flows as fat as possible with the aim of maximizing the probability of survival.-->
-
-While we believe this habitat availability and use study has been worthwhile and its findings are relevant to restoration efforts in the Lemhi River, it must be understood that the study does not come without some major confounding factors. Those factors include:
+<!--While we believe this habitat availability and use study has been worthwhile and its findings are relevant to restoration efforts in the Lemhi River, it must be understood that the study does not come without some major confounding factors. Those factors include:
 
 * Radio telemetry technology
 * Predation
 * Sample size
 * Sampling bias due to environmental conditions
 
-Because we were unable to confirm if radio tag detections were truly live fish and a high percentage of radio were physically recovered (22% of detected tags during microhabitat surveys), we hypothesize that tag antennas became entangled with physical habitat features when fish sought cover resulting in shed tags. Predation also likely contributed to the high tag recovery rate. 
-Ideally, we would have had a larger sample size of habitat use observations for a more robust analysis and better representation of the population sampled. 
+Because we were unable to confirm if radio tag detections were truly live fish and `r nrow(use_recovered)` radio tags were physically recovered, we hypothesize that tag antennas likely became entangled with physical habitat features when fish sought cover resulting in shed tags. Predation also likely contributed to amount of radio tags recovered and created uncertainty whether a radio tag detection of a live fish was truly a presmolt Chinook or another predatory species.
 
-Largely due to environmental conditions microhabitat use surveys were not always feasible during certain times of the winter or in certain sections of the river. When the river was not navigable by boat due to surface ice, we were forced to conduct surveys by foot which limited access to only those areas where we had landowner permission. Also, river conditions prevented us from collecting all desired metrics (i.e., depth and velocity) at all detected tag locations.
+Ideally, we would have had a larger sample size of habitat use observations for a more robust analysis and better representation of the population sampled. However, the sample size (n=74) was adequate to perform statistical tests to achieve significant results. 
 
-<!-- Be consistent on single- and double-spacing between sentences. Stick with single.-->
+Largely due to environmental conditions microhabitat use surveys were not always feasible during certain times of the winter or in certain sections of the river. When the river was not navigable by boat due to surface ice, we were forced to conduct surveys by foot which limited access to only those areas where we had landowner permission. Also, river conditions prevented us from collecting all desired metrics (i.e., depth and velocity) at all detected tag locations-->.
 
 # Literature Cited
