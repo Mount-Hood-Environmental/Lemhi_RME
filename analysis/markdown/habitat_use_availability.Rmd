@@ -32,17 +32,6 @@ institute:
   - mhe_mccall: Mount Hood Environmental, PO Box 4282, McCall, Idaho, 83638, USA
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  bookdown::word_document2:
-    fig_caption: yes
-    reference_docx: "../templates/template.docx"
-    number_sections: FALSE
-    toc: no
-    always_allow_html: true
-    fig_width: 6
-    pandoc_args:
-    - --lua-filter=../templates/scholarly-metadata.lua
-    - --lua-filter=../templates/author-info-blocks.lua
-    - --lua-filter=../templates/pagebreak.lua  
   bookdown::html_document2:
     theme: yeti
     toc: yes
@@ -55,6 +44,17 @@ output:
     - --lua-filter=../templates/scholarly-metadata.lua
     - --lua-filter=../templates/author-info-blocks.lua
     - --lua-filter=../templates/pagebreak.lua
+  bookdown::word_document2:
+    fig_caption: yes
+    reference_docx: "../templates/template.docx"
+    number_sections: FALSE
+    toc: no
+    always_allow_html: true
+    fig_width: 6
+    pandoc_args:
+    - --lua-filter=../templates/scholarly-metadata.lua
+    - --lua-filter=../templates/author-info-blocks.lua
+    - --lua-filter=../templates/pagebreak.lua  
 csl: "../templates/american-fisheries-society.csl"
 bibliography:
   - AckermanLibrary.bib
@@ -331,7 +331,7 @@ We estimated the proportion of the total available habitat in the lower Lemhi Ri
 
 ### Depth and Velocity
 
-Stream depth (m) and mean column velocity (m/s) were measured at 47 of the `r nrow(use_selected)` selected habitat locations during typical winter flows. Environmental conditions (surface ice and depth) at the time of sampling prevented safe collection of depth and velocity measurements at some locations. This likely introduced some bias, particularly because some locations excluded because they were too deep, and thus, unwadable. The bias was likely less prevalent for velocity measurements, as presmolt Chinook salmon tend to select areas of lower velocities during winter months [@Cunjak1996] and we were more able to sample those locations.
+Stream depth (m) and mean column velocity (m/s) were measured at 47 of the `r nrow(use_selected)` selected habitat locations during typical winter flows. Environmental conditions (surface ice and depth) at the time of sampling prevented safe collection of depth and velocity measurements at some locations. This likely introduced some bias, as some locations were excluded because they were too deep, and thus, unwadable. The bias was likely less prevalent for velocity measurements, as presmolt Chinook salmon tend to select areas of lower velocities during winter months [@Cunjak1996] and we were more able to sample those locations.
 
 We compared the available depths and velocities for the entire lower Lemhi River (derived from 2D numerical modeling raster data) to the measured depths and velocities taken in the field during microhabitat use surveys. We used a variance test (F test; how far each data point is from the group mean), to evaluate variances between the habitat availability and habitat use datasets. This led us to use an unpooled, two-sample test (Welch test) to determine if there's a significant difference (p-value < 0.05) between mean available depth and velocity and mean selected depth and velocity.     
 
@@ -416,7 +416,7 @@ sin_use
 
 ### Depth and Velocity
 
-Distributions between available stream depths and depths used by Chinook salmon presmolts were similar (Figure \@ref(fig:depth-fig)); despite the "used" mean depth being significantly lower than the available mean (p < 0.05; Table \@ref(tab:depth-tab). However, this significance could (at least partially) be explained by a potential sampling bias considered in the [Discussion](#discussion) section.
+Distributions between available stream depths and depths used by Chinook salmon presmolts were similar (Figure \@ref(fig:depth-fig)); despite the "used" mean depth being significantly lower than the available mean (p < 0.05; Table \@ref(tab:depth-tab)). However, this significance could (at least partially) be explained by a potential sampling bias considered in the [Discussion](#discussion) section.
 
 ```{r depth-fig, fig.cap = "Distributions of all available stream depths in the lower Lemhi River derived from a 2D numerical model (available) and depths used by radio-tagged juvenile Chinook salmon during late fall and winter months (use)."}
 # boxplot comparisons for available/use depths/velocities
@@ -457,7 +457,7 @@ depth_tab = t.test(Depth ~ Habitat, data = use_depth) %>%
          estimate2,
          p.value) %>%
   rename(`Mean Available Depth (m)` = estimate1,
-         `Mean Select Depth (m)` = estimate2,
+         `Mean Selected Depth (m)` = estimate2,
          `Welch t-test p-value` = p.value) %>%
   kable(caption = "Estimated mean depth for available and selected habitat and Welch t-test p-value.") %>%
   kable_styling(position = "center", 
@@ -507,7 +507,7 @@ vel_tab = t.test(Velocity ~ Habitat,
          estimate2,
          p.value) %>%
   rename(`Mean Available Velocity (m/s)` = estimate1,
-         `Mean Select Velocity (m/s)` = estimate2,
+         `Mean Selected Velocity (m/s)` = estimate2,
          `Welch t-test p-value` = p.value) %>%
   kable(caption = "Estimated mean velocity for available and selected habitat and Welch t-test p-value.") %>%
   kable_styling(position = "center", 
@@ -932,14 +932,14 @@ We belive findings from this study should prove useful for ongoing restoration e
 
 * Limitations in radio telemetry tags and technology,
 * Predation,
-* Habitat use samples sizes, and
+* Habitat use sample sizes, and
 * Sampling bias due to harsh environmental conditions during winter months
 
-In nearly all cases, we were unable to confirm whether radio tag detections (observations) were truly live fish, and further, `r nrow(use_recovered)` radio tags were physically recovered during surveys. In some cases, we suspect that tag antennas became entangled with physical habitat features (e.g., woody debris, large substrates) when fish sought cover, resulting in shed tags. Additionally, predation perhaps also contributed to the amount of radio tags recovered and created additional uncertainty on whether a detection was from a live fish or whether from a predatory species (e.g., bull trout).
+In nearly all cases, we were unable to confirm whether radio tag detections (observations) were truly live fish, and further, `r nrow(use_recovered)` radio tags were physically recovered during surveys. In some cases, we suspect that tag antennas became entangled with physical habitat features (e.g., woody debris, large substrates) when fish sought cover, resulting in shed tags. Additionally, predation perhaps also contributed to the amount of radio tags recovered and created additional uncertainty on whether a detection was from a live presmolt or from a predatory species (e.g., bull trout).
 
 Ideally, our habitat use observations would have included a larger sample size and preferably included multiple years. However, due to concerns about tag burdens and presmolts becoming entangled with physical habitat features because of the external radio antenna, radio tagging activities were ceased after the 2019/2020 winter field season. Additional use observations would have allowed for a more robust assessment and better representation of the population as a whole; however, the "use" sample size (n = 74) was sufficient to perform significance tests. 
 
-Largely due to environmental conditions microhabitat use surveys were not always feasible during certain times of the winter or in certain sections of the river. When the river was not navigable by boat due to surface ice, we were forced to conduct surveys by foot which limited access to only those areas where we had landowner permission. Also, river conditions prevented us from collecting all desired metrics (i.e., depth and velocity) at all detected tag locations during certain times.
+Largely due to environmental conditions, microhabitat use surveys were not always feasible during certain times of the winter or in certain sections of the river. When the river was not navigable by boat due to surface ice, we were forced to conduct surveys by foot which limited access to only those areas where we had landowner permission. Also, river conditions prevented us from collecting all desired metrics (i.e., depth and velocity) at all detected tag locations during certain times.
 
 ## Conclusions
 
