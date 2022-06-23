@@ -32,6 +32,17 @@ institute:
   - mhe_mccall: Mount Hood Environmental, PO Box 4282, McCall, Idaho, 83638, USA
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
+  bookdown::word_document2:
+    fig_caption: yes
+    reference_docx: "../templates/template.docx"
+    number_sections: FALSE
+    toc: no
+    always_allow_html: true
+    fig_width: 6
+    pandoc_args:
+    - --lua-filter=../templates/scholarly-metadata.lua
+    - --lua-filter=../templates/author-info-blocks.lua
+    - --lua-filter=../templates/pagebreak.lua  
   bookdown::html_document2:
     theme: yeti
     toc: yes
@@ -44,17 +55,6 @@ output:
     - --lua-filter=../templates/scholarly-metadata.lua
     - --lua-filter=../templates/author-info-blocks.lua
     - --lua-filter=../templates/pagebreak.lua
-  bookdown::word_document2:
-    fig_caption: yes
-    reference_docx: "../templates/template.docx"
-    number_sections: FALSE
-    toc: no
-    always_allow_html: true
-    fig_width: 6
-    pandoc_args:
-    - --lua-filter=../templates/scholarly-metadata.lua
-    - --lua-filter=../templates/author-info-blocks.lua
-    - --lua-filter=../templates/pagebreak.lua  
 csl: "../templates/american-fisheries-society.csl"
 bibliography:
   - AckermanLibrary.bib
@@ -251,7 +251,7 @@ unique_tag <- use_selected %>%
   distinct(radio_frequency)
 ```
 
-Mobile tracking surveys resulted in `r nrow(xs_use)` observations of `r nrow(use_unique)` radio tagged Chinook.  Of those `r nrow(use_unique)` tags, `r nrow(use_recovered)` were physically recovered from the river (one confirmed mortality). To further refine our analysis to include only those locations deemed utilized by fish, we used a decision tree (Figure \@ref(fig:tree-fig)) developed by combining information from Holleman et al. (2022) and professional judgement. This resulted in `r nrow(use_selected)` unique habitat locations utilized by `r nrow(unique_tag)` fish.
+Mobile tracking surveys resulted in `r nrow(xs_use)` observations of `r nrow(use_unique)` radio tagged Chinook.  Of those `r nrow(use_unique)` tags, `r nrow(use_recovered)` were physically recovered from the river (one confirmed mortality). To further refine our analysis to include only those locations deemed utilized by fish, we used a decision tree (Figure \@ref(fig:tree-fig)) developed by combining information from @Holleman2022 and professional judgement. This resulted in `r nrow(use_selected)` unique habitat locations utilized by `r nrow(unique_tag)` fish.
 
 ```{r tree-fig, out.width = "500px", fig.align = "center", fig.cap = "Decision tree for determining qualified tag detection locations as selected habitat." }
 knitr::include_graphics(here("analysis/images/D_tree.jpg"))
@@ -329,7 +329,7 @@ We estimate the proportion of the total available habitat in the lower Lemhi Riv
 
 ### Depth and Velocity
 
-Depth (m) and mean column velocity (m/s) were measured at 47 of the `r nrow(use_selected)` selected habitat locations during typical winter flows. Environmental conditions (surface ice and depth) at the time of sampling prevented safe collection of depth and velocity measurements at some locations. This likely introduced some bias, particularly excluding locations with the greatest depths. This bias is likely less prevalent in the velocity use dataset, as presmolt Chinook salmon tend to select areas of lower velocities during winter months #(Cunjack 1996)# and we were more able to sample those locations.
+Depth (m) and mean column velocity (m/s) were measured at 47 of the `r nrow(use_selected)` selected habitat locations during typical winter flows. Environmental conditions (surface ice and depth) at the time of sampling prevented safe collection of depth and velocity measurements at some locations. This likely introduced some bias, particularly excluding locations with the greatest depths. This bias is likely less prevalent in the velocity use dataset, as presmolt Chinook salmon tend to select areas of lower velocities during winter months [@Cunjak1996] and we were more able to sample those locations.
 
 We compared the available depths and velocities for the entire lower Lemhi River (derived from 2D numerical modeling raster data) to the measured depths and velocities taken in the field during microhabitat use surveys. We used a variance test (F test; how far each data point is from the group mean), to evaluate variances between the habitat availability and habitat use datasets. This led us to use an unpooled, two-sample test (Welch test) to determine if there's a significant difference (p-value < 0.05) between mean available depth and velocity and mean selected depth and velocity.     
 
