@@ -12,6 +12,7 @@ rm(list = ls())
 # load packages
 library(tidyverse)
 library(sf)
+library(here)
 
 #-------------------
 # habitat availability center pts
