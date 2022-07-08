@@ -170,24 +170,13 @@ load(here("analysis/data/derived_data/center_pts_all.rda"))
 Microhabitat availability data were collected in the lower Lemhi River using line-transect survey techniques similar to those described by @Favrot2018. Line-transect techniques can minimize measurement error and are more repeatable than visual techniques [@McMahon1996; @Stanfield1998]. Microhabitat availability data were collected during base-flow conditions in August 2019 and variables measured at each transect point corresponded to microhabitat use variables (described below). Points were placed every meter along a linear network of the lower Lemhi River from its confluence with Hayden Creek downstream to its confluence with the Salmon River, resulting in `r prettyNum(nrow(center_pts_all), big.mark = ",")` points in total. Each point was then categorized as occurring within a low, medium, or high sinuosity reach (calculated at the 500m reach scale) of the lower Lemhi River (Table \@ref(tab:sin-table)).
 
 ```{r sin-table}
-sin_tbl = tibble(
-  Category = c("Low", "Med", "High"),
-  Minimum = c(
-    min(center_pts_all$Sinuosity[center_pts_all$Category == "Low"]),
-    min(center_pts_all$Sinuosity[center_pts_all$Category == "Med"]),
-    min(center_pts_all$Sinuosity[center_pts_all$Category == "High"])
-  ),
-  Maximum = c(
-    max(center_pts_all$Sinuosity[center_pts_all$Category == "Low"]),
-    max(center_pts_all$Sinuosity[center_pts_all$Category == "Med"]),
-    max(center_pts_all$Sinuosity[center_pts_all$Category == "High"])
-  ),
-  `Length (m)` = c(
-    nrow(center_pts_all[center_pts_all$Category == "Low", ]),
-    nrow(center_pts_all[center_pts_all$Category == "Med", ]),
-    nrow(center_pts_all[center_pts_all$Category == "High", ])
-  )
-) %>%
+sin_tbl = center_pts_all %>%
+  st_drop_geometry() %>%
+  group_by(Category) %>%
+  summarize(Minimum = min(Sinuosity),
+            Maximum = max(Sinuosity),
+            `Length (m)` = n(),
+            .groups = "drop") %>%
   kbl(caption = "The number of points within each sinuosity category including the minimum and maximum sinuosity values for reach category.",
       format.args = list(digits = 4,
                          big.mark = ",")) %>%
@@ -199,19 +188,11 @@ sin_tbl
 We then randomly sampled an approximately equal number of points within each sinuosity category (Table \@ref(tab:xs-table)) and transects were placed at a right angle to the flow at each of the sampled points. At each transect, we then started at the wetted width midpoint of the river and sampled every meter to river right and river left (facing downstream), including the midpoint, to the wetted margin. The midpoint was designated as the zero point, points to river right were designated positive (+) and points towards river left were designated negative (-). Habitat availability measurements were taken at each point and described channel unit type, bank condition, dominant substrate, availability of substrate concealment, presence of adjacent side channels, dominant cover type, and distance to cover. In addition, depth and velocity estimates for each point were available from LiDAR-derived 2D numerical models ##(Tonina et al 2020)##. In total, habitat measurements were collected from `r nrow(xs_summary)` transects and `r prettyNum(sum(xs_summary$n_pts), big.mark = ",")` points, resulting in an average of `r round(sum(xs_summary$n_pts) / nrow(xs_summary), 1)` points per transect.
 
 ```{r xs-table}
-xs_tbl = tibble(
-  Category = c("Low", "Med", "High"),
-  `n Transects` = c(
-    nrow(xs_summary[xs_summary$sin_cat == "Low", ]),
-    nrow(xs_summary[xs_summary$sin_cat == "Med", ]),
-    nrow(xs_summary[xs_summary$sin_cat == "High", ])
-  ),
-  `n Transect Points` = c(
-    sum(xs_summary$n_pts[xs_summary$sin_cat == "Low"]),
-    sum(xs_summary$n_pts[xs_summary$sin_cat == "Med"]),
-    sum(xs_summary$n_pts[xs_summary$sin_cat == "High"])
-  )
-) %>%
+xs_tbl = xs_summary %>%
+  group_by(Category = sin_cat) %>%
+  summarize(`n Transects` = n(),
+            `n Transect Points` = sum(n_pts),
+            .groups = "drop") %>%
   mutate(`Avg. Points per Transect` = round(`n Transect Points` / `n Transects`, 1)) %>%
   kbl(caption = "The number of points within each sinuosity category including the minimum and maximum sinuosity values for reach category.",
       format.args = list(digits = 4,
