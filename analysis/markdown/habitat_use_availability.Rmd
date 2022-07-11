@@ -254,7 +254,7 @@ dv_df = dv_sf %>%
   as_tibble()
 
 # get all available depths & velocities from the complete rasters
-load("S:/main/data/habitat/lemhi_telemetry/availability/prepped/d_v_avail_sin.rda") # d_v_avail_sin
+load(here("analysis/data/derived_data/d_v_avail_sin.rda")) # d_v_avail_sin
 
 # compose a data frame for comparison
 comp_df = dv_df %>%
