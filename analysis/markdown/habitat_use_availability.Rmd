@@ -269,11 +269,95 @@ comp_df = dv_df %>%
               mutate(source = "all")) %>%
   mutate(sin_class = factor(sin_class,
                             levels = c("Low", "Med", "High")),
-         metric = str_to_title(metric))
+         metric = str_to_title(metric)) %>%
+  filter(!is.na(raster_val))
 
 ```
 
-##To determine if the 173 transects sampled for habitat availability were sufficient to capture the overall distribution of habitat metrics throughout the lower Lemhi River, we focused on depth and velocity measurements taken at each transect point. We compared the distributions of those measured values with the distributions of all depth and velocity values available from raster datasets derived from 2D numerical flow models by performing a Kolmogorov–Smirnov  test on data from each sinuosity category . If the test is insignificant, this indicates that the data from the transects described the distribution of available habitat well. We were only able to perform this test on depth and velocity because they were the only metrics with data available for the entire section of the lower Lemhi. Our assumption is that if the transect data is sufficient for depth and velocity, it also captures the distributions of the other habitat metrics as well.##
+```{r dv-comp-test}
+comp_summ <- comp_df %>%
+  # group_by(metric,
+  #          sin_class,
+  #          source) %>%
+  # sample_n(900) %>%
+  # ungroup() %>%
+  group_by(metric,
+           sin_class) %>%
+  nest() %>%
+  arrange(metric,
+          sin_class) %>%
+  # Kolmogorov–Smirnov test 
+  mutate(ks = map(data,
+                  .f = function(x) {
+                    ks.test(x = x$raster_val[x$source == "all"],
+                            y = x$raster_val[x$source == "sampled"],
+                            alternative = "two.sided")
+                  }),
+         ks_pvalue = map_dbl(ks,
+                             "p.value")) %>%
+  # Mann-Whitney U test
+  mutate(mwu = map(data,
+                   .f = function(x) {
+                     wilcox.test(raster_val ~ source,
+                                 data = x,
+                                 paired = F,
+                                 digits.rank = 5,
+                                 alternative = "two.sided")
+                   }),
+         mwu_pvalue = map_dbl(mwu,
+                              "p.value")) #%>%
+  # different version of Kolmogorov–Smirnov test 
+  mutate(ks2 = map(data,
+                 .f = function(x) {
+                   ks_test(a = x$raster_val[x$source == "all"],
+                           b = x$raster_val[x$source == "sampled"])
+                 }),
+       ks2_pvalue = map_dbl(ks2,
+                            "P-Value")) %>%
+  # Kuiper test
+  mutate(kp = map(data,
+                  .f = function(x) {
+                    kuiper_test(a = x$raster_val[x$source == "all"],
+                                b = x$raster_val[x$source == "sampled"])
+                  }),
+         kp_pvalue = map_dbl(kp,
+                             "P-Value")) %>%
+  # Anderson-Darling test
+  mutate(ad = map(data,
+                  .f = function(x) {
+                    ad_test(a = x$raster_val[x$source == "all"],
+                            b = x$raster_val[x$source == "sampled"])
+                  }),
+         ad_pvalue = map_dbl(ad,
+                             "P-Value")) %>%
+  # Cramer-Von Mises test 
+  mutate(cvm = map(data,
+                   .f = function(x) {
+                     cvm_test(a = x$raster_val[x$source == "all"],
+                              b = x$raster_val[x$source == "sampled"])
+                   }),
+         cvm_pvalue = map_dbl(cvm,
+                              "P-Value")) %>%
+  # Wass test
+  mutate(wass = map(data,
+                    .f = function(x) {
+                      wass_test(a = x$raster_val[x$source == "all"],
+                                b = x$raster_val[x$source == "sampled"])
+                    }),
+         wass_pvalue = map_dbl(wass,
+                               "P-Value")) %>%
+  # DTS test
+  mutate(dts = map(data,
+                   .f = function(x) {
+                     dts_test(a = x$raster_val[x$source == "all"],
+                              b = x$raster_val[x$source == "sampled"])
+                   }),
+         dts_pvalue = map_dbl(dts,
+                              "P-Value"))
+```
+
+
+##To determine if the 173 transects sampled for habitat availability were sufficient to capture the overall distribution of habitat metrics throughout the lower Lemhi River, we focused on depth and velocity measurements taken at each transect point. We compared the distributions of those measured values with the distributions of all depth and velocity values available from raster datasets derived from 2D numerical flow models by performing a Kolmogorov–Smirnov test and a Mann-Whitney U test on data from each sinuosity category . If the test is insignificant, this indicates that the data from the transects described the distribution of available habitat well. However, these tests are known to pick out statistically significant differences with large enough sample sizes when in fact there are not practically significant differences. Therefore, graphically comparing the distributions is also useful. We were only able to perform this test on depth and velocity because they were the only metrics with data available for the entire section of the lower Lemhi. Our assumption is that if the transect data is sufficient for depth and velocity, it also captures the distributions of the other habitat metrics as well.##
 
 Prior to evaluating for habitat selection or preference, we first wanted to assess whether the habitat availability data collected during August 2019 was sufficient to capture the overall distribution of available habitat throughout the lower Lemhi River, or whether addition habitat availability data were needed. A total of `r nrow(xs_summary)` transects (cross-sections) were sampled during August 2019 based on a stratified sample where strata were defined by low, medium, and high sinuosity (Tables \@ref(tab:sin-table) & \@ref(tab:xs-table)). We started by examining the depth and velocity values available from raster datasets derived from 2D numerical models for the entire lower Lemhi. We then extracted depth and velocity values from points along the sampled transects, and compared those distributions with the distributions of depth and velocity for the entire available raster. Our hypothesis is that if the distributions are similar between the entire raster and the sampled transects, then the sample has done an adequate job of capturing the distribution of available habitat.
 
@@ -289,7 +373,7 @@ After filtering the identified radio tags to include only those fish that we dee
 
 ### Sinuosity
 
-We estimated the proportion of the total available habitat in the lower Lemhi River that fell into each of the sinuosity categories (Table \@ref(tab:sin-table)), which was compared to the proportion of each category that Chinook salmon presmolts used. 
+We estimated the proportion of the total available habitat in the lower Lemhi River that fell into each of the sinuosity categories (Table \@ref(tab:sin-table)), which was compared to the proportion of each category that Chinook salmon presmolts used. We used an exact multinomial test as well as a likelihood ratio, or G, test to compare the proportions of sinuosity classes available to those where fish were observed using them.
 
 ### Depth and Velocity
 
@@ -314,7 +398,24 @@ We determined whether fish cover was available within 1.5 m of each habitat avai
 
 ## Habitat Availability Power Analysis
 
-Comparisons of the distributions of depths and velocities estimated from 1) the randomly placed transects used to estimate habitat availability, and 2) the entirety of the rasters derived from 2D numerical models were favorable (Figure \@ref(fig:dist-fig)). Distributions of depths and velocities were similar among all sinuosity categories (Figure \@ref(fig:dist-fig)). These findings suggest that the habitat availability data collected during August 2019 were sufficient to capture the available habitat throughout the lower Lemhi River.
+Comparisons of the distributions of depths and velocities estimated from 1) the randomly placed transects used to estimate habitat availability, and 2) the entirety of the rasters derived from 2D numerical models were favorable (Figure \@ref(fig:dist-fig) and Figure \@ref(fig:dist-cdf-fig)). Although the KS test and Mann-Whitney U test were sometimes statistically significant, the distributions and empirical cumulative distribution functions of depths and velocities were very similar among all sinuosity categories (Figure \@ref(fig:dist-fig) and Figure \@ref(fig:dist-cdf-fig)). These findings suggest that the habitat availability data collected during August 2019 were sufficient to capture the available habitat throughout the lower Lemhi River.
+
+```{r dv-ks-tab}
+comp_summ %>%
+  select(metric,
+         sin_class,
+         ends_with("pvalue")) %>%
+  kbl(digits = 4,
+      booktabs = T,
+      linesep = "",
+      col.names = c("Metric",
+                    "Sinuosity Class",
+                    "KS p-value",
+                    "MWU p-value"),
+      caption = "P-values for the Kolmogorov–Smirnov and Mann-Whitney U tests, comparing all values of depth or velocity within a sinuosity class with the values at sampled transects.") %>%
+  kable_styling()
+```
+
 
 ```{r dist-fig, fig.cap = "Density plots of depth and velocity, colored by whether taken from the entire raster (all) or the sampled transects (sampled), and faceted by sinuosity category."}
 comp_df %>%
@@ -331,11 +432,29 @@ comp_df %>%
                      name = 'Source') +
   facet_grid(sin_class ~ metric,
              scales = 'free') +
-  # facet_wrap(~ metric + sin_class, 
-  #            scales = 'free',
-  #            nrow = 2) +
   theme(legend.position = "bottom") +
   labs(x = 'Raster Value')
+
+```
+
+```{r dist-cdf-fig, fig.cap = "Empirical cumulative distribution plots of depth and velocity, colored by whether taken from the entire raster (all) or the sampled transects (sampled), and faceted by sinuosity category."}
+comp_df %>%
+  mutate(source = recode(source,
+                         `sampled` = "Sampled",
+                         `all` = "All")) %>%
+  ggplot(aes(x = raster_val,
+             color = source,
+             fill = source)) +
+  stat_ecdf(geom = "line") +
+  scale_color_brewer(palette = 'Set1',
+                     name = 'Source') +
+  scale_fill_brewer(palette = 'Set1',
+                     name = 'Source') +
+  facet_grid(sin_class ~ metric,
+             scales = 'free') +
+  theme(legend.position = "bottom") +
+  labs(x = 'Raster Value',
+       y = "Cumulative Probaility")
 
 ```
 
@@ -343,7 +462,52 @@ comp_df %>%
 
 ### Sinuosity
 
-Sinuosity categories selected by radio-tagged Chinook salmon presmolts were similar to the proportions of available habitat (Figure \@ref(fig:sin-use)), suggesting habitat use by sinuosity category was random. In other words, presmolts were *not* observed using "high" sinuosity reaches of the lower Lemhi River at a higher rate than was available, as we might expect. This result is further considered below in the [Discussion](#discussion) section.
+```{r sin-use-test}
+# percentage available habitat by sinuosity
+sin_all <- center_pts_all %>%
+  st_drop_geometry() %>%
+  select(Category) %>%
+  count(Category) %>%
+  mutate(Percentage = n/sum(n)) %>%
+  add_column(Habitat = "Available")
+
+
+sin_test <- xs_use %>%
+  filter(habitat_selected == "Selected" & same_location_as_last_survey == "no") %>%
+  select(Category) %>%
+  count(Category) %>%
+  select(n) %>%
+  add_column(metric = "Sinuosity") %>%
+  group_by(metric) %>%
+  nest(obs = n) %>%
+  mutate(obs = map(obs,
+                   .f = function(x) {
+                     pull(x, n)
+                   })) %>%
+  mutate(sin_test = map(obs,
+                        .f = purrr::quietly(function(x) {
+                          EMT::multinomial.test(observed = x,
+                                                prob = sin_all$Percentage,
+                                                useChisq = F,
+                                                MonteCarlo = T,
+                                                ntrial = 1e5)
+                        })),
+         mn_p_value = map_dbl(sin_test,
+                           .f = function(x) {
+                             x$result$p.value
+                           })) %>%
+  mutate(g_test = map(obs,
+                      .f = purrr::quietly(function(x) {
+                        DescTools::GTest(x = x,
+                                         p = sin_all$Percentage,
+                                         correct = "williams")
+                      })),
+         g_p_value = map_dbl(g_test,
+                             .f = function(x) x$result$p.value))
+
+```
+
+Sinuosity categories selected by radio-tagged Chinook salmon presmolts were similar to the proportions of available habitat (Figure \@ref(fig:sin-use)), suggesting habitat use by sinuosity category was random. The multinomial and G goodness of fit tests returned non-significant p-values (`r round(sin_test$mn_p_value, 3)` and `r round(sin_test$g_p_value, 3)`). In other words, presmolts were *not* observed using "high" sinuosity reaches of the lower Lemhi River at a higher rate than was available, as we might expect. This result is further considered below in the [Discussion](#discussion) section.
 
 ```{r sin-use, fig.cap = "Proportion of available and selected habitat by sinuosity category in the lower Lemhi."}
 # percentage available habitat by sinuosity
@@ -376,6 +540,7 @@ sin_use
 
 ```
 
+
 ### Depth and Velocity
 
 Distributions between available stream depths and depths used by Chinook salmon presmolts were similar (Figure \@ref(fig:depth-fig)); despite the "used" mean depth being significantly lower than the available mean (p < 0.05; Table \@ref(tab:depth-tab)). However, this significance could (at least partially) be explained by a potential sampling bias considered in the [Discussion](#discussion) section.
@@ -383,29 +548,39 @@ Distributions between available stream depths and depths used by Chinook salmon 
 ```{r depth-fig, fig.cap = "Distributions of all available stream depths (m) and velocities (m/s) in the lower Lemhi River derived from a 2D numerical model (available) and depths (m) and velocities (m/s) used by radio-tagged juvenile Chinook salmon during late fall and winter months (use)."}
 # boxplot comparisons for available/use depths/velocities
 d_v_avail = d_v_avail_sin %>%
-  rename("Habitat" = sin_class) %>%
-  mutate(Habitat = recode(Habitat,
-                          'High'= "Available", 'Med'= "Available", 'Low' = "Available")) %>%
-  select(Habitat, value, metric)
+  as_tibble() %>%
+  add_column(Habitat = "Available") %>%
+  select(Habitat, sin_class, 
+         metric, value)
 
 use_d_v <- use_selected %>%
-  select(depth_m, mean_column_velocity) %>%
-  rename("depth" = depth_m, "velocity" = mean_column_velocity) %>%
-  pivot_longer(depth:velocity) %>%
-  rename("metric" = name) %>%
+  select(sin_class = sin_cat,
+         depth_m, mean_column_velocity) %>%
+  rename("depth" = depth_m, 
+         "velocity" = mean_column_velocity) %>%
+  pivot_longer(depth:velocity,
+               names_to = "metric") %>%
   na.omit(value) %>%
   add_column(Habitat = "Used") %>% 
-  bind_rows(d_v_avail)
+  bind_rows(d_v_avail) %>%
+  mutate(across(sin_class,
+                factor,
+                levels = c("Low",
+                           "Med",
+                           "High")))
 
 plot_d_v <- use_d_v %>%
-  ggplot(aes(x = metric,
+  ggplot(aes(x = Habitat,
              y = value,
              fill = Habitat)) +
   geom_boxplot() +
   theme(axis.text.x = element_blank(),
         legend.position="bottom") +
   scale_fill_brewer(palette = "Set2") +
-  facet_wrap(~ metric) +
+  # facet_wrap(~ metric,
+  #            scales = "free") +
+  facet_grid(metric ~ sin_class,
+             scales = "free_y") +
   labs(x = "",
        y = "Value")
 
@@ -418,7 +593,8 @@ plot_d_v
 stat_depth <- use_d_v %>%
     filter(metric == "depth")
     
-  depth_tab = t.test(value ~ Habitat, data = stat_depth) %>%
+depth_tab = t.test(value ~ Habitat, 
+                   data = stat_depth) %>%
     tidy() %>%
     select(estimate1,
            estimate2,
@@ -432,6 +608,44 @@ stat_depth <- use_d_v %>%
 depth_tab
 
 ```
+
+```{r depth-sin-tab}
+stat_depth %>%
+  group_by(sin_class) %>%
+  nest() %>%
+  arrange(sin_class) %>%
+  mutate(t_test = map(data,
+                      .f = function(x) {
+                        t.test(value ~ Habitat, 
+                               data = x)
+                      })) %>%
+  mutate(est = map(t_test,
+                   "estimate"),
+         est = map(est,
+                   .f = function(x) {
+                     x %>%
+                       as_tibble(rownames = "group") %>%
+                       mutate(across(group,
+                                     recode,
+                                     "mean in group Available" = "Mean Available Depth (m)",
+                                     "mean in group Used" = "Mean Used Depth (m)")) %>%
+                       pivot_wider(names_from = "group",
+                                   values_from = "value")
+                   }),
+         p_value = map_dbl(t_test,
+                           "p.value")) %>%
+  unnest(est) %>%
+  select(-data,
+         -t_test) %>%
+  rename(`Sinuosity Class` = sin_class,
+         `Welch t-test p-value` = p_value) %>%
+  kable(booktabs = T,
+        digits = 3,
+        caption = "Estimated mean depth for available and used habitat and Welch t-test p-value, by sinuosity category.") %>%
+  kable_styling(position = "center", 
+                full_width = F)
+```
+
 
 Mean stream velocities used by Chinook salmon presmolts were significantly lower than those available throughout the lower Lemhi River (Figure \@ref(fig:depth-fig)); Table \@ref(tab:vel-tab)), suggesting that presmolts were selecting for slower water habitats during late fall and early winter months.
 
@@ -454,6 +668,44 @@ vel_tab = t.test(value ~ Habitat, data = stat_vel) %>%
 vel_tab
 
 ```
+
+```{r}
+stat_vel %>%
+  group_by(sin_class) %>%
+  nest() %>%
+  arrange(sin_class) %>%
+  mutate(t_test = map(data,
+                      .f = function(x) {
+                        t.test(value ~ Habitat, 
+                               data = x)
+                      })) %>%
+  mutate(est = map(t_test,
+                   "estimate"),
+         est = map(est,
+                   .f = function(x) {
+                     x %>%
+                       as_tibble(rownames = "group") %>%
+                       mutate(across(group,
+                                     recode,
+                                     "mean in group Available" = "Mean Available Velocity (m/s)",
+                                     "mean in group Used" = "Mean Used Velocity (m/s)")) %>%
+                       pivot_wider(names_from = "group",
+                                   values_from = "value")
+                   }),
+         p_value = map_dbl(t_test,
+                           "p.value")) %>%
+  unnest(est) %>%
+  select(-data,
+         -t_test) %>%
+  rename(`Sinuosity Class` = sin_class,
+         `Welch t-test p-value` = p_value) %>%
+  kable(booktabs = T,
+        digits = 3,
+        caption = "Estimated mean velocity for available and used habitat and Welch t-test p-value, by sinuosity category.") %>%
+  kable_styling(position = "center", 
+                full_width = F)
+```
+
 
 ### Channel Unit Type
 
