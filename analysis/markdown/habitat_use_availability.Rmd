@@ -306,54 +306,54 @@ comp_summ <- comp_df %>%
                    }),
          mwu_pvalue = map_dbl(mwu,
                               "p.value")) #%>%
-  # different version of Kolmogorov–Smirnov test 
-  mutate(ks2 = map(data,
-                 .f = function(x) {
-                   ks_test(a = x$raster_val[x$source == "all"],
-                           b = x$raster_val[x$source == "sampled"])
-                 }),
-       ks2_pvalue = map_dbl(ks2,
-                            "P-Value")) %>%
-  # Kuiper test
-  mutate(kp = map(data,
-                  .f = function(x) {
-                    kuiper_test(a = x$raster_val[x$source == "all"],
-                                b = x$raster_val[x$source == "sampled"])
-                  }),
-         kp_pvalue = map_dbl(kp,
-                             "P-Value")) %>%
-  # Anderson-Darling test
-  mutate(ad = map(data,
-                  .f = function(x) {
-                    ad_test(a = x$raster_val[x$source == "all"],
-                            b = x$raster_val[x$source == "sampled"])
-                  }),
-         ad_pvalue = map_dbl(ad,
-                             "P-Value")) %>%
-  # Cramer-Von Mises test 
-  mutate(cvm = map(data,
-                   .f = function(x) {
-                     cvm_test(a = x$raster_val[x$source == "all"],
-                              b = x$raster_val[x$source == "sampled"])
-                   }),
-         cvm_pvalue = map_dbl(cvm,
-                              "P-Value")) %>%
-  # Wass test
-  mutate(wass = map(data,
-                    .f = function(x) {
-                      wass_test(a = x$raster_val[x$source == "all"],
-                                b = x$raster_val[x$source == "sampled"])
-                    }),
-         wass_pvalue = map_dbl(wass,
-                               "P-Value")) %>%
-  # DTS test
-  mutate(dts = map(data,
-                   .f = function(x) {
-                     dts_test(a = x$raster_val[x$source == "all"],
-                              b = x$raster_val[x$source == "sampled"])
-                   }),
-         dts_pvalue = map_dbl(dts,
-                              "P-Value"))
+  # # different version of Kolmogorov–Smirnov test 
+  # mutate(ks2 = map(data,
+  #                .f = function(x) {
+  #                  ks_test(a = x$raster_val[x$source == "all"],
+  #                          b = x$raster_val[x$source == "sampled"])
+  #                }),
+  #      ks2_pvalue = map_dbl(ks2,
+  #                           "P-Value")) %>%
+  # # Kuiper test
+  # mutate(kp = map(data,
+  #                 .f = function(x) {
+  #                   kuiper_test(a = x$raster_val[x$source == "all"],
+  #                               b = x$raster_val[x$source == "sampled"])
+  #                 }),
+  #        kp_pvalue = map_dbl(kp,
+  #                            "P-Value")) %>%
+  # # Anderson-Darling test
+  # mutate(ad = map(data,
+  #                 .f = function(x) {
+  #                   ad_test(a = x$raster_val[x$source == "all"],
+  #                           b = x$raster_val[x$source == "sampled"])
+  #                 }),
+  #        ad_pvalue = map_dbl(ad,
+  #                            "P-Value")) %>%
+  # # Cramer-Von Mises test 
+  # mutate(cvm = map(data,
+  #                  .f = function(x) {
+  #                    cvm_test(a = x$raster_val[x$source == "all"],
+  #                             b = x$raster_val[x$source == "sampled"])
+  #                  }),
+  #        cvm_pvalue = map_dbl(cvm,
+  #                             "P-Value")) %>%
+  # # Wass test
+  # mutate(wass = map(data,
+  #                   .f = function(x) {
+  #                     wass_test(a = x$raster_val[x$source == "all"],
+  #                               b = x$raster_val[x$source == "sampled"])
+  #                   }),
+  #        wass_pvalue = map_dbl(wass,
+  #                              "P-Value")) %>%
+  # # DTS test
+  # mutate(dts = map(data,
+  #                  .f = function(x) {
+  #                    dts_test(a = x$raster_val[x$source == "all"],
+  #                             b = x$raster_val[x$source == "sampled"])
+  #                  }),
+  #        dts_pvalue = map_dbl(dts,
+  #                             "P-Value"))
 ```
 
 
@@ -543,7 +543,7 @@ sin_use
 
 ### Depth and Velocity
 
-Distributions between available stream depths and depths used by Chinook salmon presmolts were similar (Figure \@ref(fig:depth-fig)); despite the "used" mean depth being significantly lower than the available mean (p < 0.05; Table \@ref(tab:depth-tab)). However, this significance could (at least partially) be explained by a potential sampling bias considered in the [Discussion](#discussion) section.
+Distributions between available stream depths and depths used by Chinook salmon presmolts were similar (Figure \@ref(fig:depth-fig)). Although the "used" mean depth overall was significantly lower than the available mean (p < 0.05; Table \@ref(tab:depth-tab)), when broken out by sinuosity class there was not a significant difference (Table \@ref(tab:depth-sin-tab). The former significance could (at least partially) be explained by a potential sampling bias considered in the [Discussion](#discussion) section.
 
 ```{r depth-fig, fig.cap = "Distributions of all available stream depths (m) and velocities (m/s) in the lower Lemhi River derived from a 2D numerical model (available) and depths (m) and velocities (m/s) used by radio-tagged juvenile Chinook salmon during late fall and winter months (use)."}
 # boxplot comparisons for available/use depths/velocities
@@ -577,14 +577,30 @@ plot_d_v <- use_d_v %>%
   theme(axis.text.x = element_blank(),
         legend.position="bottom") +
   scale_fill_brewer(palette = "Set2") +
-  # facet_wrap(~ metric,
-  #            scales = "free") +
-  facet_grid(metric ~ sin_class,
-             scales = "free_y") +
+  facet_wrap(~ metric,
+             scales = "free") +
+  # facet_grid(metric ~ sin_class,
+  #            scales = "free_y") +
   labs(x = "",
        y = "Value")
 
-plot_d_v
+
+plot_d_v2 <- use_d_v %>%
+  ggplot(aes(x = sin_class,
+             y = value,
+             fill = Habitat)) +
+  geom_boxplot() +
+  theme(#axis.text.x = element_blank(),
+        legend.position="bottom") +
+  scale_fill_brewer(palette = "Set2") +
+  facet_wrap(~ metric,
+             scales = "free") +
+  # facet_grid(metric ~ sin_class,
+  #            scales = "free_y") +
+  labs(x = "Sinuosity Class",
+       y = "Value")
+
+plot_d_v2
 
 ```
 
@@ -602,7 +618,8 @@ depth_tab = t.test(value ~ Habitat,
     rename(`Mean Available Depth (m)` = estimate1,
            `Mean Used Depth (m)` = estimate2,
            `Welch t-test p-value` = p.value) %>%
-  kable(caption = "Estimated mean depth for available and used habitat and Welch t-test p-value.") %>%
+  kable(digits = 3,
+        caption = "Estimated mean depth for available and used habitat and Welch t-test p-value.") %>%
   kable_styling(position = "center", 
              full_width = F)
 depth_tab
@@ -647,7 +664,7 @@ stat_depth %>%
 ```
 
 
-Mean stream velocities used by Chinook salmon presmolts were significantly lower than those available throughout the lower Lemhi River (Figure \@ref(fig:depth-fig)); Table \@ref(tab:vel-tab)), suggesting that presmolts were selecting for slower water habitats during late fall and early winter months.
+Mean stream velocities used by Chinook salmon presmolts were significantly lower than those available both throughout the lower Lemhi River and by sinuousity class (Figure \@ref(fig:depth-fig)); Table \@ref(tab:vel-tab); Table \@ref(tab:vel-sin-tab)), suggesting that presmolts were selecting for slower water habitats during late fall and early winter months.
 
 ```{r vel-tab}
 # Welch t test for velocity
@@ -662,7 +679,8 @@ vel_tab = t.test(value ~ Habitat, data = stat_vel) %>%
     rename(`Mean Available Velocity (m/s)` = estimate1,
            `Mean Used Velocity (m/s)` = estimate2,
            `Welch t-test p-value` = p.value) %>%
-  kable(caption = "Estimated mean velocity for available and used habitat and Welch t-test p-value.") %>%
+  kable(caption = "Estimated mean velocity for available and used habitat and Welch t-test p-value.",
+        digits = 3) %>%
   kable_styling(position = "center", 
                 full_width = F)
 vel_tab
@@ -736,6 +754,25 @@ cu_per <- xs_avail %>%
         legend.position = "bottom") +
   ylab("Proportion") +
   xlab("")
+
+cu_per <- xs_avail %>%
+  select(channel_unit_type) %>%
+  count(channel_unit_type) %>%
+  mutate(percent = (n/sum(n))) %>%
+  mutate(channel_unit_type = recode(channel_unit_type, SC="SSC")) %>%
+  add_column(Habitat = "Available") %>%
+  bind_rows(cu_use) %>%
+  ggplot(mapping = aes(x = channel_unit_type,
+                       y = percent,
+                       fill = Habitat)) +
+  # geom_col() +
+  geom_bar(position = "dodge", stat = "identity") +
+  scale_fill_brewer(palette = "Set2") +
+  theme(legend.position = "bottom") +
+  labs(x = "Habitat",
+       y = "Proportion")
+
+
 cu_per
 ```
 
@@ -839,7 +876,8 @@ cu_tab = cu_prop_test %>%
   rename(`Sinuosity Category` = sin_cat,
          `Multinomial p-value` = mn_p_value,
          `G-test p-value` = g_p_value) %>%
-  kable(caption = "P-values of multinomial and G-tests for differences in channel unit type proportions between available and selected habitat.") %>%
+  kable(digits = 3,
+        caption = "P-values of multinomial and G-tests for differences in channel unit type proportions between available and selected habitat.") %>%
   kable_styling(position = "center", 
                 full_width = F)
 cu_tab
