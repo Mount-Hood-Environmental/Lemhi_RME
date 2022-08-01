@@ -32,6 +32,17 @@ institute:
   - mhe_mccall: Mount Hood Environmental, PO Box 4282, McCall, Idaho, 83638, USA
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
+  bookdown::word_document2:
+    fig_caption: yes
+    reference_docx: "../templates/template.docx"
+    number_sections: FALSE
+    toc: no
+    always_allow_html: true
+    fig_width: 6
+    pandoc_args:
+    - --lua-filter=../templates/scholarly-metadata.lua
+    - --lua-filter=../templates/author-info-blocks.lua
+    - --lua-filter=../templates/pagebreak.lua  
   bookdown::html_document2:
     theme: yeti
     toc: yes
@@ -44,17 +55,6 @@ output:
     - --lua-filter=../templates/scholarly-metadata.lua
     - --lua-filter=../templates/author-info-blocks.lua
     - --lua-filter=../templates/pagebreak.lua
-  bookdown::word_document2:
-    fig_caption: yes
-    reference_docx: "../templates/template.docx"
-    number_sections: FALSE
-    toc: no
-    always_allow_html: true
-    fig_width: 6
-    pandoc_args:
-    - --lua-filter=../templates/scholarly-metadata.lua
-    - --lua-filter=../templates/author-info-blocks.lua
-    - --lua-filter=../templates/pagebreak.lua  
 csl: "../templates/american-fisheries-society.csl"
 bibliography:
   - AckermanLibrary.bib
@@ -146,14 +146,14 @@ xs_summary = xs_all %>%
 
 # Background
 
-Degradation of tributary habitat has been implicated as a major factor contributing to declines of Pacific salmon *Oncorhynchus* spp. and has shown to reduce salmonid carrying capacity of freshwater ecosystems (Beechie et al. 2013b). Tributary habitat rehabilitation efforts have been employed for decades to stem population declines (Bernhardt et al. 2005). However, habitat use and preference for juvenile salmonids to inform those rehabilitation actions, particularly during winter months, are not well documented [@Huusko2007]. 
+Degradation of tributary habitat has been implicated as a major factor contributing to declines of Pacific salmon *Oncorhynchus* spp. and has shown to reduce salmonid carrying capacity of freshwater ecosystems [@Beechie2013]. Tributary habitat rehabilitation efforts have been employed for decades to stem population declines [@Bernhardt2005]. However, habitat use and preference for juvenile salmonids to inform those rehabilitation actions, particularly during winter months, are not well documented [@Huusko2007]. 
 
 Habitat requirements for fish include physical and biological components necessary to complete life histories and ensure population viability [@Newcomb2007; @Rosenfeld2003]. Habitat availability can be defined as the accessibility of such components by a fish [@Johnson1980]. Alternatively, habitat use is the way a fish exploits the physical and biological resources available to them [@Favrot2018]. Habitat suitability measures a specific available habitat's capacity to support a fish, the most suitable habitats being optimal [@Bovee1986]. Available habitats can be hierarchically characterized by a spectrum ranging from least suitable (i.e., avoided) to most suitable (i.e., optimal). Habitat selection is determined when a fish chooses a physical or biological component from a spectrum of available habitats [@Johnson1980]. If habitat use is proportionally equivalent to habitat availability (i.e., no preference), then habitat use is considered random. However, when a fish selects for a specific physical or biological component given that multiple habitat types are available, this is considered preferred habitat (e.g., laboratory experiment: @Johnson1980). Critical habitat provides components essential to sensitive life stages (e.g., early life history: @Pitlo1989, @Newcomb2007).  Winter habitat is thought be critical because of specific biological conditions required by fish for maintenance of body condition and survival during this time period [@Favrot2018]. However, due to extreme environs (e.g., surface ice), little research has characterized winter microhabitat use and suitability empirically for Pacific salmon juveniles [@Huusko2007].
 
 
 ## Objectives
 
-Quality winter rearing habitat has been identified as a limiting factor for Chinook salmon *O. tshawytscha* in the Lemhi River in eastern Idaho (OSC Team 2019). Restoration practitioners have prioritized the lower Lemhi River for rehabilitation efforts aimed at improving habitat for juvenile salmonids. To help identify target habitat conditions and guide restoration efforts, the goal of this study was to characterize microhabitat use and preference for juvenile Chinook salmon in the lower Lemhi River (below its confluence with Hayden Creek) during late fall and winter months. Habitat availability and use data were collected in the lower Lemhi River using methods similar to those described by @Favrot2018, which were previously implemented in Catherine Creek, Oregon. Habitat availability and use data were then analyzed to describe habitat selection and preference of juvenile Chinook salmon overwintering in the lower Lemhi River.
+Quality winter rearing habitat has been identified as a limiting factor for Chinook salmon *O. tshawytscha* in the Lemhi River in eastern Idaho [@IdahoOSCTeam2019]. Restoration practitioners have prioritized the lower Lemhi River for rehabilitation efforts aimed at improving habitat for juvenile salmonids. To help identify target habitat conditions and guide restoration efforts, the goal of this study was to characterize microhabitat use and preference for juvenile Chinook salmon in the lower Lemhi River (below its confluence with Hayden Creek) during late fall and winter months. Habitat availability and use data were collected in the lower Lemhi River using methods similar to those described by @Favrot2018, which were previously implemented in Catherine Creek, Oregon. Habitat availability and use data were then analyzed to describe habitat selection and preference of juvenile Chinook salmon overwintering in the lower Lemhi River.
 
 Here, we use the term "presmolts" to refer to juvenile Chinook salmon overwintering in the lower Lemhi River i.e., juveniles surviving to their first winter prior to spring emigration.
 
@@ -185,7 +185,7 @@ sin_tbl
 
 ```
 
-We then randomly sampled an approximately equal number of points within each sinuosity category (Table \@ref(tab:xs-table)) and transects were placed at a right angle to the flow at each of the sampled points. At each transect, we then started at the wetted width midpoint of the river and sampled every meter to river right and river left (facing downstream), including the midpoint, to the wetted margin. The midpoint was designated as the zero point, points to river right were designated positive (+) and points towards river left were designated negative (-). Habitat availability measurements were taken at each point and described channel unit type, bank condition, dominant substrate, availability of substrate concealment, presence of adjacent side channels, dominant cover type, and distance to cover. In addition, depth and velocity estimates for each point were available from LiDAR-derived 2D numerical models (Tonina et al. 2020). In total, habitat measurements were collected from `r nrow(xs_summary)` transects and `r prettyNum(sum(xs_summary$n_pts), big.mark = ",")` points, resulting in an average of `r round(sum(xs_summary$n_pts) / nrow(xs_summary), 1)` points per transect.
+We then randomly sampled an approximately equal number of points within each sinuosity category (Table \@ref(tab:xs-table)) and transects were placed at a right angle to the flow at each of the sampled points. At each transect, we then started at the wetted width midpoint of the river and sampled every meter to river right and river left (facing downstream), including the midpoint, to the wetted margin. The midpoint was designated as the zero point, points to river right were designated positive (+) and points towards river left were designated negative (-). Habitat availability measurements were taken at each point and described channel unit type, bank condition, dominant substrate, availability of substrate concealment, presence of adjacent side channels, dominant cover type, and distance to cover. In addition, depth and velocity estimates for each point were available from LiDAR-derived 2D numerical models [@Tonina2020]. In total, habitat measurements were collected from `r nrow(xs_summary)` transects and `r prettyNum(sum(xs_summary$n_pts), big.mark = ",")` points, resulting in an average of `r round(sum(xs_summary$n_pts) / nrow(xs_summary), 1)` points per transect.
 
 ```{r xs-table}
 xs_tbl = xs_summary %>%
@@ -1101,7 +1101,7 @@ In this study, we identified that radio-tagged Chinook salmon presmolts selected
 
 Distribution of stream depths and velocities from the sampled transects and the rasters covering the entirety of the lower Lemhi River were nearly identical within each sinuosity class. This suggested that the sampled transects sufficiently captured the distribution of available habitat, and did not need to be supplemented with additional transects. Certainly, we were interested in habitat metrics beyond depth and velocity, but without somehow simulating the true distributions of those metrics (e.g., substrate class, fish cover, etc.) it would have been difficult to conduct a worthwhile power analysis to evaluate whether the current dataset was sufficient to capture those distributions. Depth and velocity were used as proxies for other habitat characteristics, because we had model outputs for them across the entire lower Lemhi River, which we treated as the "truth". We feel that the habitat availability dataset available from line transects in the lower Lemhi River was sufficient to capture the true available habitat.
 
-We hypothesized that Chinook salmon presmolts would select high sinuosity reaches in the lower Lemhi River at a higher rate than they were available; however, this was not the case (Figure \@ref(fig:sin-use)). There did not appear to be a real pattern in fish use relative to sinuosity categories, as classified. We suspected that "high" sinuosity reaches of the lower Lemhi River would be more likely to contain lower velocity habitats and slow-water channel units, which are typically more appealing to presmolts [@Cunjak1996, @Huusko2007, @Favrot2018]. But that didn't necessarily seem to be the case here, as all sinuosity categories appeared to have similar distributions of velocity (Figure \@ref(fig:dist-fig)) despite high sinuosity reaches having higher pool frequency (Figure \@ref(fig:cu-fig)). These findings may suggest that Chinook salmon presmolts are not selecting for habitat at the reach (e.g., 500 m) scale, but rather at a more microhabitat scale. Additionally, these results may be impacted by the limitations of the 2-D LiDAR surface and resulting depth and velocity outputs utilized for the availability estimations. The propagation of elevation uncertainty in the LiDAR surface and the spatial resolution of the resulting numerical model outputs (1 m x 1 m) likely resulted in a smoothing effect across complex habitat often associated with higher sinuosity reaches. Further, error propagation was found to be most extreme in areas of high complexity and large amounts of cover, with steep banks and inflections (Tonina et al. 2020).
+We hypothesized that Chinook salmon presmolts would select high sinuosity reaches in the lower Lemhi River at a higher rate than they were available; however, this was not the case (Figure \@ref(fig:sin-use)). There did not appear to be a real pattern in fish use relative to sinuosity categories, as classified. We suspected that "high" sinuosity reaches of the lower Lemhi River would be more likely to contain lower velocity habitats and slow-water channel units, which are typically more appealing to presmolts [@Cunjak1996, @Huusko2007, @Favrot2018]. But that didn't necessarily seem to be the case here, as all sinuosity categories appeared to have similar distributions of velocity (Figure \@ref(fig:dist-fig)) despite high sinuosity reaches having higher pool frequency (Figure \@ref(fig:cu-fig)). These findings may suggest that Chinook salmon presmolts are not selecting for habitat at the reach (e.g., 500 m) scale, but rather at a more microhabitat scale. Additionally, these results may be impacted by the limitations of the 2-D LiDAR surface and resulting depth and velocity outputs utilized for the availability estimations. The propagation of elevation uncertainty in the LiDAR surface and the spatial resolution of the resulting numerical model outputs (1 m x 1 m) likely resulted in a smoothing effect across complex habitat often associated with higher sinuosity reaches. Further, error propagation was found to be most extreme in areas of high complexity and large amounts of cover, with steep banks and inflections [@Tonina2020].
 
 While our analysis demonstrated a significant difference between mean available depths in the lower Lemhi River and depths used by Chinook salmon presmolts (Table \@ref(tab:depth-tab)), with premolts selecting for shallower depths, we believe this results could at least partially be explained by a sampling bias. For example, stream depths were not collected at some fish use locations because, at the time of sampling, those locations were too deep or swift to safely and accurately measure. Had these omitted data points been included in the used dataset, bias in observed depths may have been reduced (albeit to an unknown degree), and a significant difference may not have been found. Alternatively, some locations where radio tags were detected were considered non-selected habitats based on stream velocities. Any locations with a stream velocity greater than 0.7 m/s were excluded as potential use locations because those velocities exceed sustained swimming capabilities of the average sized Chinook salmon tagged for this study [@Holleman2022]. 
 
@@ -1128,12 +1128,3 @@ We identified that Chinook salmon presmolts selected for slower velocity microha
 
 
 # Literature Cited
-
-Beechie, T., H. Imaki, J. Greene, A. Wade, H. Wu, G. Pess, P. Roni, J. Kimball, J. Stanford, P. Kiffney, and N. Mantua. 2013b. Restoring salmon habitat for a changing climate. River Research and Applications 29:939-960.
-
-Bernhardt, E.S., M.A. Palmer, J.D. Allan, and the National River Restoration Science Synthesis Working Group. 2005. Restoration of U.S. rivers; A national synthesis. Science 308:636-637.
-
-
-OSC Team (Idaho Governor's Office of Species Conservation and partners). 2019. Upper Salmon Subbasin Integrated Rehabilitation Assessment. Assessment prepared for and with the U.S. Department of the Interior, Bureau of Reclamation. June. 625 pp.
-
-Tonina, D., McKean, J. A., Benjankar, R. M., Yager, E., Carmichael, R. A., Chen, Q., Carpenter, A., Kelsey, L. G., and Edmondson, M. R. (2020) Evaluating the performance of topobathymetric LiDAR to support multi-dimensional flow modelling in a gravel-bed mountain stream. Earth Surf. Process. Landforms, 45: 2850– 2868. https://doi.org/10.1002/esp.4934.
