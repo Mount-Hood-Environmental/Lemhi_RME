@@ -57,5 +57,5 @@ lem_chnk_tag_deets %>%
   })
 
 # save tagging details
-write_rds(lem_chnk_tag_deets,
-          file = here('analysis/data/derived_data/lemhi_taggging_details.rds'))
+# write_rds(lem_chnk_tag_deets,
+#           file = here('analysis/data/derived_data/lemhi_tagging_details.rds'))
