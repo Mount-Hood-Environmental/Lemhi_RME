@@ -103,23 +103,35 @@ parent_child = tribble(~parent, ~child,
 # plot parent-child table
 plotNodes(parent_child = parent_child)
 
-# get observation data from all brood years and both capture methods
+# create tibble of "cases"
 cases = expand.grid(2007:2021,
                   c("SCREWT", "SHOCK")) %>%
-  mutate(case = paste0("BY",
-                       Var1,
-                       "_",
-                       Var2)) %>%
+  mutate(case = paste0("BY", Var1, "_", Var2)) %>%
   select(case) %>%
   filter(case != "BY2007_SHOCK") %>%
   as_tibble()
 
+# get observation data from all brood years and both capture methods
 obs_df = cases %>%
   mutate(ptagis_raw = map(cases,
                           .f = function(cs) {
                             readCTH(here("analysis/data/raw_data/PTAGIS/lem_surv",
                                          paste0(cs, ".csv")))
-                          }))
+                          })) %>%
+  # compress PTAGIS detections
+  mutate(comp = map(ptagis_raw,
+                    .f = function(x) {
+                      compress(x,
+                               configuration = config_file,
+                               max_minutes = 60 * 24 * 10,
+                               units = "days",
+                               ignore_event_vs_release = T)
+                    }))
 
+# save(config_file,
+#      parent_child,
+#      obs_df,
+#      file = "S:/main/data/fish/lem_surv/lem_survival.Rdata")
 
+load("S:/main/data/fish/lem_surv/lem_survival.Rdata")
 
