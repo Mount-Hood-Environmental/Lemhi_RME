@@ -33,11 +33,13 @@ lem_chnk_tag_deets = list.files(here("analysis/data/raw_data/tagging_details"), 
     mark_month_number < 7 ~ "Smolt",
     between(mark_month_number, 7, 8) ~ "Parr"
   )) %>%
+  mutate(mark_site_code_value = case_when(
+    mark_site_code_value %in% c("LEMHIW") ~ "LEMTRP",
+    TRUE ~ mark_site_code_value
+  )) %>%
   mutate(brood_year_yyyy = if_else(juv_stage == "Smolt",
                                    mark_year_yyyy - 2,
                                    mark_year_yyyy - 1))
-
-tabyl(lem_chnk_tag_deets, mark_year_yyyy, capture_method_code)
 
 # write tag lists to file, by capture method and brood year
 lem_chnk_tag_deets %>%
