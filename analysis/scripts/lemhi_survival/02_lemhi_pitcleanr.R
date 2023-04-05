@@ -91,9 +91,9 @@ plotNodes(parent_child = parent_child)
 # only doing BY2015 - BY2020 for now to keep file sizes reasonable and BY2020 the last complete BY, for now
 cases = expand.grid(2015:2020,
                     c("SCREWT", "SHOCK")) %>%
-  mutate(case = paste0("BY", Var1, "_", Var2)) %>%
-  select(case) %>%
-  filter(case != "BY2007_SHOCK") %>%
+  mutate(cases = paste0("BY", Var1, "_", Var2)) %>%
+  select(cases) %>%
+  filter(cases != "BY2007_SHOCK") %>%
   as_tibble()
 
 # get observation data from all brood years and both capture methods
@@ -102,23 +102,6 @@ obs_df = cases %>%
                           .f = function(cs) {
                             readCTH(here("analysis/data/raw_data/PTAGIS/lem_surv",
                                          paste0(cs, ".csv")))
-                          })) %>%
-  # compress PTAGIS detections
-  mutate(comp = map(ptagis_raw,
-                    .f = function(x) {
-                      compress(x,
-                               configuration = config_file,
-                               max_minutes = 60 * 24 * 10,
-                               units = "days",
-                               ignore_event_vs_release = T)
-                    }))
-
-# get observation data from all years
-tmp = tibble(brood_year = 2004:2019) %>%
-  mutate(ptagis_raw = map(brood_year,
-                          .f = function(byr) {
-                            readCTH(here("analysis/data/raw_data/PTAGIS/nrr_vs_dsr",
-                                         paste0("Lemhi_Chnk_Juv_BY", byr, ".csv")))
                           })) %>%
   # compress PTAGIS detections
   mutate(comp = map(ptagis_raw,
