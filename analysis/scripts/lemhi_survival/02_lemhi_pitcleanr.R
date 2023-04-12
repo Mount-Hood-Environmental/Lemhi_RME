@@ -10,6 +10,7 @@ rm(list = ls())
 # load packages
 library(tidyverse)
 library(here)
+library(sf)
 
 # load PITcleanr
 # remotes::install_github("mackerman44/PITcleanr@main", build_vignettes = T, force = T)
@@ -17,7 +18,7 @@ browseVignettes("PITcleanr")
 library(PITcleanr)
 
 # read in tagging details, as needed
-# lem_chnk_tag_deets = read_rds("S:/main/data/fish/lem_surv/lemhi_tagging_details.rds")
+lem_chnk_tag_deets = read_rds("S:/main/data/fish/lem_surv/lemhi_tagging_details.rds")
 
 # tabyl(lem_chnk_tag_deets, mark_site_code_value, mark_year_yyyy)
 # mark_site_code_value 2009 2010 2011 2012 2013 2014 2015 2016 2017 2018 2019 2020 2021 2022
@@ -63,29 +64,20 @@ config_file = buildConfig() %>%
     TRUE ~ node
   ))
 
-# I need to fix the below to better reflect the sites in the Lemhi that we're interested in
-# create parent-child table
-parent_child = tribble(~parent, ~child,
-                       "LEMHI", "LLR",
-                       "LLR", "GRJ",
-                       "GRJ", "GOJ",
-                       "GOJ", "LMJ",
-                       "LMJ", "ICH",
-                       "ICH", "MCJ",
-                       "MCJ", "JDJ",
-                       "JDJ", "BOJ",
-                       "BOJ", "BON",
-                       "BON", "TD1",
-                       "TD1", "JO1",
-                       "JO1", "MCN",
-                       "MCN", "ICH",
-                       "ICH", "LMA",
-                       "LMA", "GOA",
-                       "GOA", "GRA",
-                       "GRA", "USE")
+# our sites of interest
+sites_of_interest = c("18MILC", "BIG8MC", "BIGSPC", "BOHANC", "BTIMBC", "CANY2C", "HAYDNC", "KENYC", "LEEC", "LLSPRC", "WIMPYC", # tribs
+                      "LEMHIR",                     # Lemhi mainstem
+                      "HYDTRP", "LEMHIW", "LEMTRP", # upper traps
+                      "LLRTP",                      # lower trap
+                      "LLR",                        # lower Lemhi array
+                      "GRJ", "GOJ", "LMJ", "ICH", "MCJ", "JDJ", "BOJ", "BON", "TD1", "JO1", "MCN", "ICH", "LMA", "GOA", "GRA", "USE")
 
-# plot parent-child table
-plotNodes(parent_child = parent_child)
+# create sf of sites of interest
+sites_sf = config_file %>%
+  filter(node %in% sites_of_interest) %>%
+  st_as_sf(coords = c("longitude",
+                      "latitude"),
+           crs = 4326)
 
 # create tibble of "cases"
 # only doing BY2015 - BY2020 for now to keep file sizes reasonable and BY2020 the last complete BY, for now
@@ -112,6 +104,34 @@ obs_df = cases %>%
                                units = "days",
                                ignore_event_vs_release = T)
                     }))
+
+# convert compressed ptagis cths into capture histories
+ch_df = obs_df$comp[[1]]
+
+
+# This still needs to be revised to reflect the various sites in the Lemhi that we're interested in
+# create parent-child table
+parent_child = tribble(~parent, ~child,
+                       "LEMHI", "LLR",
+                       "LLR", "GRJ",
+                       "GRJ", "GOJ",
+                       "GOJ", "LMJ",
+                       "LMJ", "ICH",
+                       "ICH", "MCJ",
+                       "MCJ", "JDJ",
+                       "JDJ", "BOJ",
+                       "BOJ", "BON",
+                       "BON", "TD1",
+                       "TD1", "JO1",
+                       "JO1", "MCN",
+                       "MCN", "ICH",
+                       "ICH", "LMA",
+                       "LMA", "GOA",
+                       "GOA", "GRA",
+                       "GRA", "USE")
+
+# plot parent-child table
+plotNodes(parent_child = parent_child)
 
 # save(config_file,
 #      parent_child,
