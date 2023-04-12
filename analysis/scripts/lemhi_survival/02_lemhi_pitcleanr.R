@@ -62,7 +62,7 @@ config_file = buildConfig() %>%
     site_code %in% c("B2J", "BCC", "B1J", "BVX")           ~ "BOJ",    # Combine all juvenile sites at Bonneville
     site_code %in% c("BO1", "BO2", "BO3", "BO4", "BONAFF") ~ "BON",    # Combine all adult sites at Bonneville
     TRUE ~ node
-  ))
+  )) # add another case_when to combine all juvenile detections below GRJ into a single node
 
 # our sites of interest
 sites_of_interest = c("18MILC", "BIG8MC", "BIGSPC", "BOHANC", "BTIMBC", "CANY2C", "HAYDNC", "KENYC", "LEEC", "LLSPRC", "WIMPYC", # tribs
@@ -119,16 +119,16 @@ parent_child = tribble(~parent, ~child,
                        "LMJ", "ICH",
                        "ICH", "MCJ",
                        "MCJ", "JDJ",
-                       "JDJ", "BOJ",
-                       "BOJ", "BON",
-                       "BON", "TD1",
-                       "TD1", "JO1",
-                       "JO1", "MCN",
-                       "MCN", "ICH",
-                       "ICH", "LMA",
-                       "LMA", "GOA",
-                       "GOA", "GRA",
-                       "GRA", "USE")
+                       "JDJ", "BOJ")
+                       # "BOJ", "BON",
+                       # "BON", "TD1",
+                       # "TD1", "JO1",
+                       # "JO1", "MCN",
+                       # "MCN", "ICH",
+                       # "ICH", "LMA",
+                       # "LMA", "GOA",
+                       # "GOA", "GRA",
+                       # "GRA", "USE")
 
 # plot parent-child table
 plotNodes(parent_child = parent_child)
