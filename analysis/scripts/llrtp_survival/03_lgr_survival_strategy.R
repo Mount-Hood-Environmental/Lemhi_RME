@@ -115,7 +115,7 @@ plotNodes(parent_child = parent_child)
 obs_df = tibble(brood_year = 2004:2019) %>%
   mutate(ptagis_raw = map(brood_year,
                           .f = function(byr) {
-                            readCTH(here("analysis/data/raw_data/PTAGIS",
+                            readCTH(here("analysis/data/raw_data/PTAGIS/nrr_vs_dsr",
                                          paste0("Lemhi_Chnk_Juv_BY", byr, ".csv")))
                           })) %>%
   # compress PTAGIS detections
