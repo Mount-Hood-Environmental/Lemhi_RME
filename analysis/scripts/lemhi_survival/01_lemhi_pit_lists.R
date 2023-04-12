@@ -20,7 +20,7 @@ lem_chnk_tag_deets = list.files(here("analysis/data/raw_data/tagging_details"), 
     ))) %>%
   as_tibble() %>%
   clean_names() %>%
-  # filter for just Chinook salmon and steelhead, e-fishing and screw traps
+  # filter for just Chinook salmon, e-fishing and screw traps
   filter(species_name == "Chinook",
          capture_method_code == "SHOCK" | capture_method_code == "SCREWT",
          # filter out some very small or large sizes
