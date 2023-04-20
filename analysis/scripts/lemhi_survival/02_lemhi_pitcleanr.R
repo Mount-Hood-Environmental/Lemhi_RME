@@ -156,10 +156,22 @@ start_df = obs_df$comp[[1]] %>%
     TRUE ~ min_det
   )) %>%
   filter(node %in% sites_of_interest) %>%
-  group_by(tag_code, slot)
+  arrange(tag_code, slot)
 
 # start here
 # convert compressed ptagis cths into capture histories
+ch_df = start_df %>%
+  mutate(node = factor(node,
+                       levels = sites_of_interest)) %>%
+  select(tag_code, node) %>%
+  distinct() %>%
+  mutate(seen = 1) %>%
+  pivot_wider(names_from = node,
+              values_from = seen,
+              values_fill = 0,
+              names_sort = T)
+
+
 ch_df = start_df %>%
   left_join(config_file %>%
               arrange(site_code, node, rkm) %>%
