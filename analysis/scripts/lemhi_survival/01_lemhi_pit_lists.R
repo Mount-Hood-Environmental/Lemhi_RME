@@ -35,6 +35,7 @@ lem_chnk_tag_deets = list.files(here("analysis/data/raw_data/tagging_details"), 
   )) %>%
   mutate(mark_site_code_value = case_when(
     mark_site_code_value %in% c("LEMHIW") ~ "LEMTRP",
+    # LEMHIR fish in 2017 & prior captured via SCREWT were captured at LLRTP
     mark_site_code_value %in% c("LEMHIR") & capture_method_code == "SCREWT" ~ "LLRTP",
     TRUE ~ mark_site_code_value
   )) %>%
