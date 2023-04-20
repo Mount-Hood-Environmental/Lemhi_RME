@@ -63,9 +63,9 @@ config_file = buildConfig() %>%
 
 # our sites of interest
 sites_of_interest = c("18MILC", "CANY2C", "BTIMBC", "BIGSPC", "BIG8MC", "LEEC", "LLSPRC", "LEMHIR", "LEMTRP", # upper Lemhi tribs, ending with trap
-                      "HAYDNC", "HAYDTRP",                                                                    # Hayden Creek, ending with trap
+                      "HAYDNC", "HAYDTRP", "HYC",                                                             # Hayden Creek, ending with trap
                       "KENYC", "WIMPYC", "BOHANC", "LLRTP",                                                   # lower Lemhi tribs, with trap
-                      "LLR", "GRJ", "GOJ", "LMJ", "ICH", "MCJ", "JDJ", "BOJ")                                 # LLR and juvenile hydrosystem
+                      "LLR", "GRJ", "BLW_GRJ")                                 # LLR and juvenile hydrosystem
 
 # create sf of sites of interest
 sites_sf = config_file %>%
@@ -89,19 +89,15 @@ parent_child = tribble(~parent, ~child,
                        "LEEC",   "LEMTRP",
                        "LLSPRC", "LEMTRP",
                        "HAYDNC", "HYDTRP",
-                       "HYDTRP", "LLRTP",
+                       "HYDTRP", "HYC",
+                       "HYC",    "LLRTP",
                        "LEMTRP", "LLRTP",
                        "KENYC",  "LLRTP",
                        "WIMPYC", "LLRTP",
                        "BOHANC", "LLRTP",
                        "LLRTP",  "LLR",
                        "LLR",    "GRJ",
-                       "GRJ",    "GOJ",
-                       "GOJ",    "LMJ",
-                       "LMJ",    "ICH",
-                       "ICH",    "MCJ",
-                       "MCJ",    "JDJ",
-                       "JDJ",    "BOJ")
+                       "GRJ",    "BLW_GRJ")
 
 # plot parent-child table
 plotNodes(parent_child = parent_child)
@@ -132,8 +128,61 @@ obs_df = cases %>%
                                ignore_event_vs_release = T)
                     }))
 
+# reset all capture histories to start at tagging location
+start_df = obs_df$comp[[1]] %>%
+  mutate(case = obs_df$cases[[1]],
+         brood_year_yyyy = as.numeric(substr(case, 3, 6)),
+         capture_method_code = str_split_i(case, "_", 2)) %>%
+  full_join(lem_chnk_tag_deets %>%
+              select(tag_code,
+                     brood_year_yyyy,
+                     capture_method_code,
+                     mark_site_code_value,
+                     mark_date_mmddyyyy),
+            by = c("tag_code", "brood_year_yyyy", "capture_method_code")) %>%
+  mutate(mark_date_time = as.POSIXct(mark_date_mmddyyyy, format = "%m/%d/%Y") + hours(6)) %>%
+  select(-case, -mark_date_mmddyyyy) %>%
+  mutate(node = case_when(
+    node == "LEMHIR" & event_type_name == "Mark" & capture_method_code == "SCREWT" ~ "LLRTP",
+    is.na(node) ~ mark_site_code_value,
+    TRUE ~ node
+  )) %>%
+  mutate(slot = case_when(
+    is.na(slot) ~ 1,
+    TRUE ~ slot
+  )) %>%
+  mutate(min_det = case_when(
+    is.na(min_det) ~ mark_date_time,
+    TRUE ~ min_det
+  )) %>%
+  filter(node %in% sites_of_interest) %>%
+  group_by(tag_code, slot)
+
+# start here
 # convert compressed ptagis cths into capture histories
-ch_df = obs_df$comp[[1]]
+ch_df = start_df %>%
+  left_join(config_file %>%
+              arrange(site_code, node, rkm) %>%
+              group_by(node) %>%
+              filter(!is.na(rkm), rkm != "*") %>%
+              slice(1) %>%
+              ungroup() %>%
+              select(node, rkm) %>%
+              separate(rkm,
+                       into = paste("rkm", 1:2, sep = "_")) %>%
+              mutate(across(starts_with("rkm"),
+                            as.numeric)),
+            by = "node") %>%
+  filter(node %in% sites_of_interest) %>%
+  mutate(node = factor(node,
+                       levels = sites_of_interest)) %>%
+  select(tag_code, node) %>%
+  distinct() %>%
+  mutate(seen = 1) %>%
+  pivot_wider(names_from = node,
+              values_from = seen,
+              values_fill = 0,
+              names_sort = T)
 
 # save(config_file,
 #      parent_child,
