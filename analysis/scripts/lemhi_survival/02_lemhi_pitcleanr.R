@@ -11,15 +11,17 @@ rm(list = ls())
 library(tidyverse)
 library(here)
 library(sf)
+library(janitor)
 
 # load PITcleanr
 # remotes::install_github("mackerman44/PITcleanr@main", build_vignettes = T, force = T)
-browseVignettes("PITcleanr")
 library(PITcleanr)
+browseVignettes("PITcleanr")
 
 # read in tagging details, as needed
 lem_chnk_tag_deets = read_rds("S:/main/data/fish/lem_surv/lemhi_tagging_details.rds")
 
+#tabyl(lem_chnk_tag_deets, mark_site_code_value, brood_year_yyyy)
 tabyl(lem_chnk_tag_deets, mark_site_code_value, mark_year_yyyy)
 # mark_site_code_value 2009 2010 2011 2012 2013 2014 2015 2016 2017 2018 2019 2020 2021 2022
 #               18MILC    0    0    0    0    0    0    0    0    0    0    0    3    0    0
@@ -57,27 +59,48 @@ config_file = buildConfig() %>%
     site_code %in% c("TDA", "TD2")                             ~ "TD1",    # The Dalles Dam, The Dalles North Fish Ladder
     site_code %in% c("B2J", "BCC", "B1J", "BVX")               ~ "BOJ",    # Combine all juvenile sites at Bonneville
     site_code %in% c("BO1", "BO2", "BO3", "BO4", "BONAFF")     ~ "BON",    # Combine all adult sites at Bonneville (not necessary as we may not be using it here)
-    site_code %in% c("GOJ", "LMJ", "ICH", "MCJ", "JDJ", "BOJ") ~ "BLW_GRJ",# Finally, combine all juvenile detections below GRJ into a single node
+    TRUE ~ node
+  )) %>%
+  # Finally, combine all juvenile detections below GRJ into a single node
+  mutate(node = case_when(
+    node %in% c("GOJ", "LMJ", "ICH", "MCJ", "JDJ", "BOJ") ~ "BLW_GRJ",
     TRUE ~ node
   ))
 
 # our sites of interest
-sites_of_interest = c("18MILC", "CANY2C", "BTIMBC", "BIGSPC", "BIG8MC", "LEEC", "LLSPRC", "LEMHIR", "LEMTRP", # upper Lemhi tribs, ending with trap
+nodes_of_interest = c("18MILC", "CANY2C", "BTIMBC", "BIGSPC", "BIG8MC", "LEEC", "LLSPRC", "LEMHIR", "LEMTRP", # upper Lemhi tribs, ending with trap
                       "HAYDNC", "HAYDTRP", "HYC",                                                             # Hayden Creek, ending with trap
                       "KENYC", "WIMPYC", "BOHANC", "LLRTP",                                                   # lower Lemhi tribs, with trap
-                      "LLR", "GRJ", "BLW_GRJ")                                 # LLR and juvenile hydrosystem
+                      "LLR", "GRJ", "BLW_GRJ")                                                                # LLR and juvenile hydrosystem
 
 # create sf of sites of interest
 sites_sf = config_file %>%
-  filter(node %in% sites_of_interest) %>%
+  filter(node %in% nodes_of_interest) %>%
   arrange(node) %>%
   st_as_sf(coords = c("longitude",
                       "latitude"),
            crs = 4326)
 
-# write to shapefile
+# let's look at some sites
 sites_sf %>%
-  st_write(here("analysis/data/derived_data/sites_sf.shp"), append = T)
+  select(node, site_code, site_type, geometry) %>%
+  # just look at lemhi sites
+  filter(!node %in% c("GRJ", "BLW_GRJ")) %>%
+  distinct() %>%
+  ggplot() +
+  geom_sf(aes(colour = site_type)) +
+  geom_sf_text(aes(label = site_code),
+               size = 3) +
+  theme(legend.position = "top",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_blank()) +
+  labs(colour = "Site Type")
+
+# write to shapefile
+# sites_sf %>%
+#   st_write(here("analysis/data/derived_data/sites_sf.shp"), append = T)
 
 # create parent-child table
 parent_child = tribble(~parent, ~child,
@@ -101,6 +124,7 @@ parent_child = tribble(~parent, ~child,
 
 # plot parent-child table
 plotNodes(parent_child = parent_child)
+# as of 4/21/23, the parent-child table is not being used. But if it does get used, could use a review, maybe from Kevin.
 
 # create tibble of "cases"
 # only doing BY2015 - BY2020 for now to keep file sizes reasonable and BY2020 the last complete BY, for now
@@ -126,80 +150,62 @@ obs_df = cases %>%
                                max_minutes = 60 * 24 * 10,
                                units = "days",
                                ignore_event_vs_release = T)
-                    }))
+                    })) %>%
+  # convert compressed ptagis cths into capture histories
+  mutate(ch = map(comp,
+                  .f = function(comp_obs) {
+                    comp_obs %>%
+                      filter(node %in% nodes_of_interest) %>%
+                      mutate(node = factor(node,
+                                           levels = nodes_of_interest)) %>%
+                      select(tag_code, node) %>%
+                      distinct() %>%
+                      mutate(seen = 1) %>%
+                      # convert to wide format
+                      pivot_wider(names_from = node,
+                                  values_from = seen,
+                                  values_fill = 0,
+                                  names_sort = T,
+                                  names_expand = T) %>% # makes sure all nodes are includes in ch's
+                      unite(ch, 2:(length(nodes_of_interest) + 1), sep = "") %>%
+                      # grab information of interest from tagging details
+                      left_join(lem_chnk_tag_deets %>%
+                                  select(tag_code,
+                                         mark_site_code_value,
+                                         brood_year_yyyy,
+                                         capture_method_code,
+                                         length_mm,
+                                         weight_g,
+                                         juv_stage))
+                  }))
 
-# reset all capture histories to start at tagging location
-start_df = obs_df$comp[[1]] %>%
-  mutate(case = obs_df$cases[[1]],
-         brood_year_yyyy = as.numeric(substr(case, 3, 6)),
-         capture_method_code = str_split_i(case, "_", 2)) %>%
-  full_join(lem_chnk_tag_deets %>%
-              select(tag_code,
-                     brood_year_yyyy,
-                     capture_method_code,
-                     mark_site_code_value,
-                     mark_date_mmddyyyy),
-            by = c("tag_code", "brood_year_yyyy", "capture_method_code")) %>%
-  mutate(mark_date_time = as.POSIXct(mark_date_mmddyyyy, format = "%m/%d/%Y") + hours(6)) %>%
-  select(-case, -mark_date_mmddyyyy) %>%
-  mutate(node = case_when(
-    node == "LEMHIR" & event_type_name == "Mark" & capture_method_code == "SCREWT" ~ "LLRTP",
-    is.na(node) ~ mark_site_code_value,
-    TRUE ~ node
-  )) %>%
-  mutate(slot = case_when(
-    is.na(slot) ~ 1,
-    TRUE ~ slot
-  )) %>%
-  mutate(min_det = case_when(
-    is.na(min_det) ~ mark_date_time,
-    TRUE ~ min_det
-  )) %>%
-  filter(node %in% sites_of_interest) %>%
-  arrange(tag_code, slot)
-
-# start here
 # convert compressed ptagis cths into capture histories
-ch_df = start_df %>%
-  mutate(node = factor(node,
-                       levels = sites_of_interest)) %>%
-  select(tag_code, node) %>%
-  distinct() %>%
-  mutate(seen = 1) %>%
-  pivot_wider(names_from = node,
-              values_from = seen,
-              values_fill = 0,
-              names_sort = T)
+# ch_df = obs_df$comp[[12]] %>%
+#   filter(node %in% nodes_of_interest) %>%
+#   mutate(node = factor(node,
+#                        levels = nodes_of_interest)) %>%
+#   select(tag_code, node) %>%
+#   distinct() %>%
+#   mutate(seen = 1) %>%
+#   pivot_wider(names_from = node,
+#               values_from = seen,
+#               values_fill = 0,
+#               names_sort = T,
+#               names_expand = T) %>%
+#   unite(ch, 2:(length(nodes_of_interest) + 1), sep = "") %>%
+#   left_join(lem_chnk_tag_deets %>%
+#               select(tag_code,
+#                      mark_site_code_value,
+#                      brood_year_yyyy,
+#                      capture_method_code,
+#                      length_mm,
+#                      weight_g,
+#                      juv_stage))
 
+save(config_file,
+     nodes_of_interest,
+     obs_df,
+     file = "S:/main/data/fish/lem_surv/lem_survival.Rdata")
 
-ch_df = start_df %>%
-  left_join(config_file %>%
-              arrange(site_code, node, rkm) %>%
-              group_by(node) %>%
-              filter(!is.na(rkm), rkm != "*") %>%
-              slice(1) %>%
-              ungroup() %>%
-              select(node, rkm) %>%
-              separate(rkm,
-                       into = paste("rkm", 1:2, sep = "_")) %>%
-              mutate(across(starts_with("rkm"),
-                            as.numeric)),
-            by = "node") %>%
-  filter(node %in% sites_of_interest) %>%
-  mutate(node = factor(node,
-                       levels = sites_of_interest)) %>%
-  select(tag_code, node) %>%
-  distinct() %>%
-  mutate(seen = 1) %>%
-  pivot_wider(names_from = node,
-              values_from = seen,
-              values_fill = 0,
-              names_sort = T)
-
-# save(config_file,
-#      parent_child,
-#      obs_df,
-#      file = "S:/main/data/fish/lem_surv/lem_survival.Rdata")
-#
 # load("S:/main/data/fish/lem_surv/lem_survival.Rdata")
 
