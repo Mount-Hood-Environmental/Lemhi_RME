@@ -2,7 +2,7 @@
 # Purpose: Set up configuration and parent-child tables, prep complete tag histories for CJS model
 #
 # Created: April 3, 2023
-# Last Modified:
+# Last Modified: April 21, 2023
 
 # clear environment
 rm(list = ls())
@@ -207,5 +207,5 @@ save(config_file,
      obs_df,
      file = "S:/main/data/fish/lem_surv/lem_survival.Rdata")
 
-# load("S:/main/data/fish/lem_surv/lem_survival.Rdata")
+# END SCRIPT
 
