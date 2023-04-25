@@ -73,13 +73,145 @@ nodes_of_interest = c("18MILC", "CANY2C", "BTIMBC", "BIGSPC", "BIG8MC", "LEEC", 
                       "KENYC", "WIMPYC", "BOHANC", "LLRTP",                                                   # lower Lemhi tribs, with trap
                       "LLR", "GRJ", "BLW_GRJ")                                                                # LLR and juvenile hydrosystem
 
+#-----------------------------------------------------------------
+# code inserted by Kevin
+#-----------------------------------------------------------------
+
 # create sf of sites of interest
 sites_sf = config_file %>%
   filter(node %in% nodes_of_interest) %>%
+  group_by(site_code) %>%
+  filter(config_id == max(config_id)) %>%
+  ungroup() %>%
+  select(node,
+         site_code,
+         site_name,
+         site_type = site_type_name,
+         type = site_type,
+         rkm,
+         rkm_total,
+         site_description = site_description,
+         latitude, longitude) %>%
+  distinct() %>%
   arrange(node) %>%
+  group_by(node) %>%
+  filter(rkm_total == min(rkm_total)) %>%
+  slice(1) %>%
+  ungroup() %>%
   st_as_sf(coords = c("longitude",
                       "latitude"),
            crs = 4326)
+
+# download the NHDPlus v2 flowlines
+# do you want flowlines downstream of root site? Set to TRUE if you have downstream sites
+dwn_flw = T
+nhd_list = queryFlowlines(sites_sf = sites_sf,
+                          root_site_code = "LLR",
+                          min_strm_order = 2,
+                          dwnstrm_sites = dwn_flw,
+                          dwn_min_stream_order_diff = 4)
+
+# compile the upstream and downstream flowlines
+flowlines = nhd_list$flowlines
+if(dwn_flw) {
+  flowlines <- flowlines
+    rbind(nhd_list$dwn_flowlines)
+}
+
+
+# plot the flowlines and the sites
+ggplot() +
+  geom_sf(data = flowlines |>
+            filter(str_detect(REACHCODE, "^17060204000")),
+          aes(color = as.factor(StreamOrde),
+              size = StreamOrde)) +
+  scale_color_viridis_d(direction = -1,
+                        option = "D",
+                        name = "Stream\nOrder",
+                        end = 0.8) +
+  scale_size_continuous(range = c(0.2, 1.2),
+                        guide = 'none') +
+  geom_sf(data = nhd_list$basin,
+          fill = NA,
+          lwd = 2) +
+  geom_sf(data = sites_sf %>%
+            filter(str_detect(rkm, "522.303.416")),
+          size = 4,
+          color = "black") +
+  # geom_sf_label(data = sites_sf %>%
+  #                 filter(str_detect(rkm, "522.303.416")),
+  #               aes(label = site_code)) +
+  ggrepel::geom_label_repel(
+    data = sites_sf %>%
+      filter(str_detect(rkm, "522.303.416"),
+             site_code != "LLR"),
+    aes(label = site_code,
+        geometry = geometry),
+    stat = "sf_coordinates",
+    min.segment.length = 0
+  ) +
+  geom_sf_label(data = sites_sf %>%
+                  filter(site_code == "LLR"),
+                aes(label = site_code),
+                color = "red") +
+  theme_bw() +
+  theme(axis.title = element_blank())
+
+
+
+# create parent-child table based on site locations and flowlines
+parent_child = sites_sf %>%
+  buildParentChild(flowlines,
+                   # rm_na_parent = T,
+                   add_rkm = F) %>%
+  editParentChild(fix_list =
+                    list(c(NA, "GRJ", "B1J"),
+                         c(NA, "LLR", "GRJ"),
+                         c("B1J", "LLRTP", "LLR"),
+                         c("GRJ", "LLRTP", "LLR"),
+                         c("BIGSPC", "BTIMBC", "LEMHIW"),
+                         c("BIGSPC", "CANY2C", "LEMHIW"),
+                         c("BIGSPC", "18MILC", "LEMHIW"),
+                         c("LEMHIR", "HYC", "LLRTP"),
+                         c("LLSPRC", "BIGSPC", "LEMHIW"),
+                         c("LLSPRC", "BIG8MC", "LEMHIW"),
+                         c("LLSPRC", "LEEC", "LEMHIW"))) %>%
+  filter(!is.na(parent))
+
+plotNodes(parent_child)
+
+
+buildNodeOrder(parent_child,
+               direction = "d") |>
+  mutate(across(node,
+                ~ factor(.,
+                         levels = nodes_of_interest))) %>%
+  arrange(node, node_order)
+
+# flip parent and child relationships to reflect downstream movement
+parent_child <- parent_child %>%
+  rename(p = parent,
+         ph = parent_hydro,
+         c = child,
+         ch = child_hydro) %>%
+  rename(parent = c,
+         parent_hydro = ch,
+         child = p,
+         child_hydro = ph) |>
+  select(parent,
+         child,
+         parent_hydro,
+         child_hydro) |>
+  arrange(desc(child_hydro),
+          desc(parent_hydro))
+
+
+
+#-----------------------------------------------------------------
+# end of Kevin's code
+#-----------------------------------------------------------------
+
+
 
 # let's look at some sites
 sites_sf %>%
@@ -137,6 +269,10 @@ cases = expand.grid(2015:2020,
 
 # get observation data from all brood years and both capture methods
 obs_df = cases %>%
+  mutate(brood_year = str_extract(cases, "[:digit:]+"),
+         across(brood_year,
+                as.numeric),
+         capture_method = str_split(cases, "_", simplify = T)[,2]) %>%
   mutate(ptagis_raw = map(cases,
                           .f = function(cs) {
                             readCTH(here("analysis/data/raw_data/PTAGIS/lem_surv",
