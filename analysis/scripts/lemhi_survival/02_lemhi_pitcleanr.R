@@ -73,10 +73,6 @@ nodes_of_interest = c("18MILC", "CANY2C", "BTIMBC", "BIGSPC", "BIG8MC", "LEEC", 
                       "KENYC", "WIMPYC", "BOHANC", "LLRTP",                                                   # lower Lemhi tribs, with trap
                       "LLR", "GRJ", "BLW_GRJ")                                                                # LLR and juvenile hydrosystem
 
-#-----------------------------------------------------------------
-# code inserted by Kevin
-#-----------------------------------------------------------------
-
 # create sf of sites of interest
 sites_sf = config_file %>%
   filter(node %in% nodes_of_interest) %>%
@@ -90,7 +86,7 @@ sites_sf = config_file %>%
          type = site_type,
          rkm,
          rkm_total,
-         site_description = site_description,
+         site_description,
          latitude, longitude) %>%
   distinct() %>%
   arrange(node) %>%
@@ -117,7 +113,6 @@ if(dwn_flw) {
   flowlines <- flowlines
     rbind(nhd_list$dwn_flowlines)
 }
-
 
 # plot the flowlines and the sites
 ggplot() +
@@ -157,8 +152,6 @@ ggplot() +
   theme_bw() +
   theme(axis.title = element_blank())
 
-
-
 # create parent-child table based on site locations and flowlines
 parent_child = sites_sf %>%
   buildParentChild(flowlines,
@@ -178,18 +171,19 @@ parent_child = sites_sf %>%
                          c("LLSPRC", "LEEC", "LEMHIW"))) %>%
   filter(!is.na(parent))
 
+# plot parent-child table
 plotNodes(parent_child)
 
-
-buildNodeOrder(parent_child,
-               direction = "d") |>
+# create node orders based on parent-child table
+node_order = buildNodeOrder(parent_child,
+                            direction = "d") |>
   mutate(across(node,
                 ~ factor(.,
                          levels = nodes_of_interest))) %>%
   arrange(node, node_order)
 
 # flip parent and child relationships to reflect downstream movement
-parent_child <- parent_child %>%
+parent_child = parent_child %>%
   rename(p = parent,
          ph = parent_hydro,
          c = child,
@@ -205,58 +199,12 @@ parent_child <- parent_child %>%
   arrange(desc(child_hydro),
           desc(parent_hydro))
 
-
-
-#-----------------------------------------------------------------
-# end of Kevin's code
-#-----------------------------------------------------------------
-
-
-
-# let's look at some sites
-sites_sf %>%
-  select(node, site_code, site_type, geometry) %>%
-  # just look at lemhi sites
-  filter(!node %in% c("GRJ", "BLW_GRJ")) %>%
-  distinct() %>%
-  ggplot() +
-  geom_sf(aes(colour = site_type)) +
-  geom_sf_text(aes(label = site_code),
-               size = 3) +
-  theme(legend.position = "top",
-        axis.title.x = element_blank(),
-        axis.title.y = element_blank(),
-        axis.text.x = element_blank(),
-        axis.text.y = element_blank()) +
-  labs(colour = "Site Type")
+# plot parent-child table
+plotNodes(parent_child)
 
 # write to shapefile
-# sites_sf %>%
-#   st_write(here("analysis/data/derived_data/sites_sf.shp"), append = T)
-
-# create parent-child table
-parent_child = tribble(~parent, ~child,
-                       "18MILC", "LEMTRP",
-                       "CANY2C", "LEMTRP",
-                       "BTIMBC", "LEMTRP",
-                       "BIGSPC", "LEMTRP",
-                       "BIG8MC", "LEMTRP",
-                       "LEEC",   "LEMTRP",
-                       "LLSPRC", "LEMTRP",
-                       "HAYDNC", "HYDTRP",
-                       "HYDTRP", "HYC",
-                       "HYC",    "LLRTP",
-                       "LEMTRP", "LLRTP",
-                       "KENYC",  "LLRTP",
-                       "WIMPYC", "LLRTP",
-                       "BOHANC", "LLRTP",
-                       "LLRTP",  "LLR",
-                       "LLR",    "GRJ",
-                       "GRJ",    "BLW_GRJ")
-
-# plot parent-child table
-plotNodes(parent_child = parent_child)
-# as of 4/21/23, the parent-child table is not being used. But if it does get used, could use a review, maybe from Kevin.
+sites_sf %>%
+  st_write(here("analysis/data/derived_data/sites_sf.shp"), append = T)
 
 # create tibble of "cases"
 # only doing BY2015 - BY2020 for now to keep file sizes reasonable and BY2020 the last complete BY, for now
@@ -315,30 +263,10 @@ obs_df = cases %>%
                                          juv_stage))
                   }))
 
-# convert compressed ptagis cths into capture histories
-# ch_df = obs_df$comp[[12]] %>%
-#   filter(node %in% nodes_of_interest) %>%
-#   mutate(node = factor(node,
-#                        levels = nodes_of_interest)) %>%
-#   select(tag_code, node) %>%
-#   distinct() %>%
-#   mutate(seen = 1) %>%
-#   pivot_wider(names_from = node,
-#               values_from = seen,
-#               values_fill = 0,
-#               names_sort = T,
-#               names_expand = T) %>%
-#   unite(ch, 2:(length(nodes_of_interest) + 1), sep = "") %>%
-#   left_join(lem_chnk_tag_deets %>%
-#               select(tag_code,
-#                      mark_site_code_value,
-#                      brood_year_yyyy,
-#                      capture_method_code,
-#                      length_mm,
-#                      weight_g,
-#                      juv_stage))
-
+# save important stuff to NAS
 save(config_file,
+     parent_child,
+     node_order,
      nodes_of_interest,
      obs_df,
      file = "S:/main/data/fish/lem_surv/lem_survival.Rdata")
