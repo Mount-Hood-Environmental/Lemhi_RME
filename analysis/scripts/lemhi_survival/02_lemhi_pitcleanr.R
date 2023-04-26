@@ -14,7 +14,7 @@ library(sf)
 library(janitor)
 
 # load PITcleanr
-# remotes::install_github("mackerman44/PITcleanr@main", build_vignettes = T, force = T)
+#remotes::install_github("mackerman44/PITcleanr@main", build_vignettes = T, force = T)
 library(PITcleanr)
 browseVignettes("PITcleanr")
 
@@ -69,7 +69,7 @@ config_file = buildConfig() %>%
 
 # our sites of interest
 nodes_of_interest = c("18MILC", "CANY2C", "BTIMBC", "BIGSPC", "BIG8MC", "LEEC", "LLSPRC", "LEMHIR", "LEMTRP", # upper Lemhi tribs, ending with trap
-                      "HAYDNC", "HAYDTRP", "HYC",                                                             # Hayden Creek, ending with trap
+                      "HAYDNC", "HYDTRP", "HYC",                                                              # Hayden Creek, ending with trap
                       "KENYC", "WIMPYC", "BOHANC", "LLRTP",                                                   # lower Lemhi tribs, with trap
                       "LLR", "GRJ", "BLW_GRJ")                                                                # LLR and juvenile hydrosystem
 
@@ -82,8 +82,7 @@ sites_sf = config_file %>%
   select(node,
          site_code,
          site_name,
-         site_type = site_type_name,
-         type = site_type,
+         site_type,
          rkm,
          rkm_total,
          site_description,
@@ -98,9 +97,15 @@ sites_sf = config_file %>%
                       "latitude"),
            crs = 4326)
 
+# write to shapefile
+sites_sf %>%
+  st_write(here("analysis/data/derived_data/sites_sf.shp"), append = T)
+
 # download the NHDPlus v2 flowlines
 # do you want flowlines downstream of root site? Set to TRUE if you have downstream sites
 dwn_flw = T
+
+# this query sometimes fails; if so, just re-run
 nhd_list = queryFlowlines(sites_sf = sites_sf,
                           root_site_code = "LLR",
                           min_strm_order = 2,
@@ -109,9 +114,9 @@ nhd_list = queryFlowlines(sites_sf = sites_sf,
 
 # compile the upstream and downstream flowlines
 flowlines = nhd_list$flowlines
-if(dwn_flw) {
-  flowlines <- flowlines
-    rbind(nhd_list$dwn_flowlines)
+if(dwn_flw == T) {
+  flowlines = flowlines
+  rbind(nhd_list$dwn_flowlines)
 }
 
 # plot the flowlines and the sites
@@ -133,26 +138,23 @@ ggplot() +
             filter(str_detect(rkm, "522.303.416")),
           size = 4,
           color = "black") +
-  # geom_sf_label(data = sites_sf %>%
-  #                 filter(str_detect(rkm, "522.303.416")),
-  #               aes(label = site_code)) +
   ggrepel::geom_label_repel(
     data = sites_sf %>%
       filter(str_detect(rkm, "522.303.416"),
-             site_code != "LLR"),
-    aes(label = site_code,
+             node != "LLR"),
+    aes(label = node,
         geometry = geometry),
     stat = "sf_coordinates",
-    min.segment.length = 0
-  ) +
+    min.segment.length = 0) +
   geom_sf_label(data = sites_sf %>%
-                  filter(site_code == "LLR"),
-                aes(label = site_code),
+                  filter(node == "LLR"),
+                aes(label = node),
                 color = "red") +
   theme_bw() +
   theme(axis.title = element_blank())
 
 # create parent-child table based on site locations and flowlines
+# fix HYC, HAYDNC
 parent_child = sites_sf %>%
   buildParentChild(flowlines,
                    # rm_na_parent = T,
@@ -161,22 +163,26 @@ parent_child = sites_sf %>%
                     list(c(NA, "GRJ", "B1J"),
                          c(NA, "LLR", "GRJ"),
                          c("B1J", "LLRTP", "LLR"),
-                         c("GRJ", "LLRTP", "LLR"),
+                         c("LEMHIR", "HYDTRP", "HYC"),
+                         c("LLSPRC", "BIGSPC", "LEMHIW"),
+                         c("LLSPRC", "BIG8MC", "LEMHIW"),
+                         c("LLSPRC", "LEEC", "LEMHIW"),
                          c("BIGSPC", "BTIMBC", "LEMHIW"),
                          c("BIGSPC", "CANY2C", "LEMHIW"),
                          c("BIGSPC", "18MILC", "LEMHIW"),
-                         c("LEMHIR", "HYC", "LLRTP"),
-                         c("LLSPRC", "BIGSPC", "LEMHIW"),
-                         c("LLSPRC", "BIG8MC", "LEMHIW"),
-                         c("LLSPRC", "LEEC", "LEMHIW"))) %>%
-  filter(!is.na(parent))
+                         c("HYC", "HAYDNC", "HYDTRP"))) %>%
+  filter(!is.na(parent)) %>%
+  mutate_at(c("parent", "child"),
+            recode,
+            "B1J" = "BLW_GRJ",
+            "LEMHIW" = "LEMTRP")
 
 # plot parent-child table
 plotNodes(parent_child)
 
 # create node orders based on parent-child table
 node_order = buildNodeOrder(parent_child,
-                            direction = "d") |>
+                            direction = "d") %>%
   mutate(across(node,
                 ~ factor(.,
                          levels = nodes_of_interest))) %>%
@@ -191,20 +197,16 @@ parent_child = parent_child %>%
   rename(parent = c,
          parent_hydro = ch,
          child = p,
-         child_hydro = ph) |>
+         child_hydro = ph) %>%
   select(parent,
          child,
          parent_hydro,
-         child_hydro) |>
+         child_hydro) %>%
   arrange(desc(child_hydro),
           desc(parent_hydro))
 
 # plot parent-child table
 plotNodes(parent_child)
-
-# write to shapefile
-sites_sf %>%
-  st_write(here("analysis/data/derived_data/sites_sf.shp"), append = T)
 
 # create tibble of "cases"
 # only doing BY2015 - BY2020 for now to keep file sizes reasonable and BY2020 the last complete BY, for now
@@ -214,6 +216,18 @@ cases = expand.grid(2015:2020,
   select(cases) %>%
   filter(cases != "BY2007_SHOCK") %>%
   as_tibble()
+
+# cs_to_recode = c("BY2007_SCREWT",
+#                  "BY2008_SCREWT",
+#                  "BY2009_SCREWT",
+#                  "BY2010_SCREWT",
+#                  "BY2011_SCREWT",
+#                  "BY2012_SCREWT",
+#                  "BY2013_SCREWT",
+#                  "BY2014_SCREWT",
+#                  "BY2015_SCREWT",
+#                  "BY2016_SCREWT",
+#                  "BY2017_SCREWT")
 
 # get observation data from all brood years and both capture methods
 obs_df = cases %>%
@@ -226,6 +240,7 @@ obs_df = cases %>%
                             readCTH(here("analysis/data/raw_data/PTAGIS/lem_surv",
                                          paste0(cs, ".csv")))
                           })) %>%
+  # Fish with event_side_code_value == LEMHIR in 2017 and prior captured via SCREWT should be recoded to event_side_code_value == LLRTP
   # compress PTAGIS detections
   mutate(comp = map(ptagis_raw,
                     .f = function(x) {
@@ -233,7 +248,9 @@ obs_df = cases %>%
                                configuration = config_file,
                                max_minutes = 60 * 24 * 10,
                                units = "days",
-                               ignore_event_vs_release = T)
+                               ignore_event_vs_release = T) %>%
+                        # remove adult detection i.e., those > 365 days after mark date
+                        filter(!travel_time > 500)
                     })) %>%
   # convert compressed ptagis cths into capture histories
   mutate(ch = map(comp,
@@ -263,12 +280,26 @@ obs_df = cases %>%
                                          juv_stage))
                   }))
 
+# unnest all compressed observations
+comp_all = obs_df %>%
+  select(-ptagis_raw, -ch) %>%
+  unnest(comp)
+
+# unnest all capture histories
+ch_all = obs_df %>%
+  select(-ptagis_raw, -comp) %>%
+  unnest(ch) %>%
+  mutate(across(c(brood_year,
+                  capture_method),
+                as.factor))
+
 # save important stuff to NAS
 save(config_file,
      parent_child,
      node_order,
      nodes_of_interest,
-     obs_df,
+     comp_all,
+     ch_all,
      file = "S:/main/data/fish/lem_surv/lem_survival.Rdata")
 
 # END SCRIPT

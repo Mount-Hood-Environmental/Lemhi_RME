@@ -1,8 +1,8 @@
-# Author: Mike Ackerman
+# Author: Mike Ackerman & Kevin See
 # Purpose: Run CJS model on Lemhi River -> hydrosystem juvenile capture histories
 #
 # Created: April 21, 2023
-# Last Modified:
+# Last Modified: April 26, 2023
 
 # clear environment
 rm(list = ls())
@@ -16,17 +16,14 @@ library(marked)
 load("S:/main/data/fish/lem_surv/lem_survival.Rdata")
 
 # unnest all compressed observations
-comp_all <- obs_df %>%
-  select(-ptagis_raw,
-         -ch) %>%
+comp_all = obs_df %>%
+  select(-ptagis_raw, -ch) %>%
   unnest(comp)
 
-
 # unnest all capture histories
-ch_all <- obs_df %>%
-  select(-ptagis_raw,
-         -comp) %>%
-  unnest(ch) |>
+ch_all = obs_df %>%
+  select(-ptagis_raw, -comp) %>%
+  unnest(ch) %>%
   mutate(across(c(brood_year,
                   capture_method),
                 as.factor))
