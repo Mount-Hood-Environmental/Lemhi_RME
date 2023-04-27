@@ -210,24 +210,25 @@ plotNodes(parent_child)
 
 # create tibble of "cases"
 # only doing BY2015 - BY2020 for now to keep file sizes reasonable and BY2020 the last complete BY, for now
-cases = expand.grid(2015:2020,
+cases = expand.grid(2007:2020,
                     c("SCREWT", "SHOCK")) %>%
   mutate(cases = paste0("BY", Var1, "_", Var2)) %>%
   select(cases) %>%
   filter(cases != "BY2007_SHOCK") %>%
   as_tibble()
 
-# cs_to_recode = c("BY2007_SCREWT",
-#                  "BY2008_SCREWT",
-#                  "BY2009_SCREWT",
-#                  "BY2010_SCREWT",
-#                  "BY2011_SCREWT",
-#                  "BY2012_SCREWT",
-#                  "BY2013_SCREWT",
-#                  "BY2014_SCREWT",
-#                  "BY2015_SCREWT",
-#                  "BY2016_SCREWT",
-#                  "BY2017_SCREWT")
+# LEMHIR observations need to be recoded in these "cases"
+cs_to_recode = c("BY2007_SCREWT",
+                 "BY2008_SCREWT",
+                 "BY2009_SCREWT",
+                 "BY2010_SCREWT",
+                 "BY2011_SCREWT",
+                 "BY2012_SCREWT",
+                 "BY2013_SCREWT",
+                 "BY2014_SCREWT",
+                 "BY2015_SCREWT",
+                 "BY2016_SCREWT",
+                 "BY2017_SCREWT")
 
 # get observation data from all brood years and both capture methods
 obs_df = cases %>%
@@ -237,11 +238,29 @@ obs_df = cases %>%
          capture_method = str_split(cases, "_", simplify = T)[,2]) %>%
   mutate(ptagis_raw = map(cases,
                           .f = function(cs) {
-                            readCTH(here("analysis/data/raw_data/PTAGIS/lem_surv",
-                                         paste0(cs, ".csv")))
+                            # For these "cases" of complete tag histories, fish with event_side_code_value == LEMHIR and captured via SCREWT in 2017 and prior,
+                            # are incorrectly coded and should be recoded to event_side_code_value == LLRTP
+                            if(cs %in% cs_to_recode) {
+                              readCTH(here("analysis/data/raw_data/PTAGIS/lem_surv",
+                                           paste0(cs, ".csv"))) %>%
+                                mutate(event_site_code_value = case_when(
+                                  event_site_code_value %in% c("LEMHIR") & event_type_name %in% c("Mark", "Recapture") ~ "LLRTP",
+                                  TRUE ~ event_site_code_value
+                                )) %>%
+                                mutate(event_release_site_code_code = case_when(
+                                  event_release_site_code_code %in% c("LEMHIR") & event_type_name %in% c("Mark", "Recapture") ~ "LLRTP",
+                                  TRUE ~ event_site_code_value
+                                )) %>%
+                                mutate(event_site_type_description = case_when(
+                                  event_site_code_value %in% c("LLRTP") & event_type_name %in% c("Mark", "Recapture") ~ "Trap or Weir",
+                                  TRUE ~ event_site_type_description
+                                ))
+                            # in other cases, just read in CTH
+                            } else {
+                              readCTH(here("analysis/data/raw_data/PTAGIS/lem_surv",
+                                           paste0(cs, ".csv")))
+                            }
                           })) %>%
-  # Fish with event_side_code_value == LEMHIR in 2017 and prior captured via SCREWT should be recoded to event_side_code_value == LLRTP
-  # compress PTAGIS detections
   mutate(comp = map(ptagis_raw,
                     .f = function(x) {
                       compress(x,
@@ -249,8 +268,8 @@ obs_df = cases %>%
                                max_minutes = 60 * 24 * 10,
                                units = "days",
                                ignore_event_vs_release = T) %>%
-                        # remove adult detection i.e., those > 365 days after mark date
-                        filter(!travel_time > 500)
+                        # remove adult detection i.e., those > 500 days after mark date
+                        filter(!travel_time > 500 | is.na(travel_time))
                     })) %>%
   # convert compressed ptagis cths into capture histories
   mutate(ch = map(comp,
