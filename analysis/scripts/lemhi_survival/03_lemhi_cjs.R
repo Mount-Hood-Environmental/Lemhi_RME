@@ -60,3 +60,5 @@ save(results,
      top_mod_results,
      file = "S:/main/data/fish/lem_surv/lem_surv_results.Rdata")
 
+# load, if needed
+load("S:/main/data/fish/lem_surv/lem_surv_results.Rdata")
