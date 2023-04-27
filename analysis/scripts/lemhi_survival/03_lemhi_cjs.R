@@ -43,7 +43,7 @@ p.time = list(formula = ~ time)
 p.yr   = list(formula = ~ brood_year)
 
 ?create.model.list
-cml = create.model.list(c("Phi","p")) # makes all possible combinations of those parameter formulas
+cml = create.model.list(c("Phi", "p")) # makes all possible combinations of those parameter formulas
 results = crm.wrapper(cml,
                       data = lemhi_proc,
                       ddl = lemhi_ddl,
@@ -53,3 +53,10 @@ results = crm.wrapper(cml,
 
 # view results
 results
+top_mod_results = results$Phi.yr.p.time
+
+# save results
+save(results,
+     top_mod_results,
+     file = "S:/main/data/fish/lem_surv/lem_surv_results.Rdata")
+
