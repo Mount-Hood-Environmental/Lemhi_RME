@@ -72,6 +72,7 @@ results = crm.wrapper(cml,
 
 # view results
 results
+top_mod_results = results$Phi.cap.time.p.time
 
 # save results
 save(results,
